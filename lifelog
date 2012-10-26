@@ -1,0 +1,2 @@
+#!/bin/sh
+python /Users/chainz/script/google_lifelog/lifelog.py $@

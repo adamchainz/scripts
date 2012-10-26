@@ -1,0 +1,8 @@
+#!/bin/sh
+AUTHOR=$1
+SINCE=$2
+if [[ "$SINCE" = "" ]]; then
+    SINCE="1970"
+fi
+echo For $AUTHOR since $SINCE:
+git log --since="$SINCE" --author="$AUTHOR" --pretty=tformat: --numstat | gawk '{ add += $1 ; subs += $2 ; sum += $1 + $2; net += $1 - $2; } END { printf "Added lines: %s, Removed lines : %s, Total lines affected: %s, Net: %s\n",add,subs,sum,net }' -

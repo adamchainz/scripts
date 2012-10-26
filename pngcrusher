@@ -37,7 +37,7 @@ if __name__ == '__main__':
     if not len(sys.argv) > 1:
         print "Tell me which files, or --all for recursive all."
     else:
-        if sys.argv[1   ] == "--all":
+        if sys.argv[1] == "--all":
             pngcrush_all_recursive()
         else:
             # Individual named files

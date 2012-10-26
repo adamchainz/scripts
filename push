@@ -1,0 +1,7 @@
+#!/bin/sh
+if [ -f "./fabfile.py" ]
+then
+    ./fab push
+else
+    git push
+fi
