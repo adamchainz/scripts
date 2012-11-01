@@ -1,2 +1,0 @@
-#!/bin/sh
-curl https://www.google.com/calendar/ical/djchainz%40gmail.com/private-d538b305ff280184f385df06cfb27204/basic.ics > /Users/chainz/Dropbox/Documents/Calendar/calendar.ics
