@@ -3,5 +3,5 @@ if [ -f "./fabfile.py" ]
 then
     ./fab push
 else
-    git push
+    git push origin `git rev-parse --abbrev-ref HEAD`
 fi
