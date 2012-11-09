@@ -7,15 +7,12 @@ def run_and_get_output(comm):
         return subprocess.Popen(comm, stdout=subprocess.PIPE).communicate()[0]
 
 
-def mp3_320ize(filename):
-    if not filename.endswith(".wav"):
-        print filename, "not a wav. Not converting."
-    else:
-        run_and_get_output(["ffmpeg", "-i", filename, "-ab", "320k", filename[:-4] + ".mp3"])
+def audio_dump(filename):
+    run_and_get_output(["ffmpeg", "-i", filename, "-acodec", "copy", filename[:-4] + ".mp3"])
 
 if __name__ == '__main__':
     if len(sys.argv) < 1:
         print "Tell me which file(s)."
     else:
         for f in sys.argv[1:]:
-            mp3_320ize(f)
+            audio_dump(f)
