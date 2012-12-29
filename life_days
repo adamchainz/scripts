@@ -1,0 +1,10 @@
+#!/usr/bin/python
+# coding=utf-8
+from datetime import datetime, date
+
+birthday = date(1989, 10, 4)
+today = datetime.utcnow().date()
+
+day_num = (today - birthday).days
+remaining = 30000 - day_num
+print "Hello Adam, you have been alive", day_num, "days and you are project to live", remaining, "more."
