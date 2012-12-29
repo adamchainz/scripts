@@ -1,11 +1,15 @@
 #!/usr/bin/python
 # coding=utf-8
+import sys
 from datetime import datetime, date
 from django.utils.termcolors import make_style
 
 # Styles
-bold = make_style(fg='yellow', opts=('bold',))
-redbold = make_style(fg='red', opts=('bold',))
+if sys.stdout.isatty():
+    bold = make_style(fg='yellow', opts=('bold',))
+    redbold = make_style(fg='red', opts=('bold',))
+else:
+    bold = redbold = lambda x:x
 
 # Calc
 birthday = date(1989, 10, 4)
