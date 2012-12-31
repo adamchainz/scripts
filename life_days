@@ -16,7 +16,7 @@ birthday = date(1989, 10, 4)
 today = datetime.utcnow().date()
 
 day_num = (today - birthday).days
-remaining = 30000 - day_num
+remaining = 28506 - day_num
 
 print ""
 print bold("Hello Adam,"), "you have been alive", redbold("%i days" % day_num), "and you are projected to live", redbold("%i more" % remaining) + "."
