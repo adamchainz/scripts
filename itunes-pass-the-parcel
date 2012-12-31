@@ -1,0 +1,33 @@
+#!/usr/bin/python
+# coding=utf-8
+import time
+import random
+import subprocess
+
+
+def run_command(comm):
+    return subprocess.Popen(comm, stdout=subprocess.PIPE).communicate()[0]
+
+
+def itunes_play():
+    run_command(["osascript", "-e", 'tell application "iTunes" to play'])
+
+
+def itunes_pause():
+    run_command(["osascript", "-e", 'tell application "iTunes" to pause'])
+
+while True:
+    try:
+        input_str = raw_input("Press enter to start passing, or ctrl-c to quit!")
+    except KeyboardInterrupt:
+        break
+
+    print "Pass the parcel!!"
+
+    time_length = random.randint(5, 25)
+    itunes_play()
+    time.sleep(time_length)
+    itunes_pause()
+
+    print "Parcel passed for", time_length, "seconds."
+    print ""
