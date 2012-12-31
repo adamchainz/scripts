@@ -5,7 +5,7 @@ import subprocess
 
 
 def run_and_get_output(comm):
-        return subprocess.Popen(comm, stdout=subprocess.PIPE).communicate()[0]
+    return subprocess.Popen(comm, stdout=subprocess.PIPE).communicate()[0]
 
 
 def pngcrush_one(filename):
