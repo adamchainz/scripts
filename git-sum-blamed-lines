@@ -1,5 +1,5 @@
 #!/bin/sh
-git ls-tree -r HEAD | \
+git ls-tree -r HEAD -- . | \
 cut -f 2 | \
 grep -E '\.(py|js|scss|html|mustache|md|sh)$' | \
 xargs -n1 git blame --line-porcelain | \
