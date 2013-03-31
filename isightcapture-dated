@@ -1,0 +1,4 @@
+#!/bin/sh
+DATE=$(date "+%Y-%m-%dT%H-%M-%S")
+OUTPUT=$(isightcapture -w 1280 -h 720 -t jpg "/Users/chainz/Dropbox/Aart/Photos/macwake/$DATE.jpg" 2>&1)
+logger -t $0 "$OUTPUT"
