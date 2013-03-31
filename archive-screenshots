@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+from datetime import datetime, timedelta
+import dateutil.parser
+import os
+import re
+import shutil
+
+
+desktop = os.environ['HOME'] + '/Desktop/'
+photo_storage = os.environ['HOME'] + '/Dropbox/Aart/Photos/'
+trash = os.environ['HOME'] + '/.Trash'
+today = datetime.utcnow()
+
+
+def get_date_folder(date_string):
+    year = re.search(r'\d{4}', date_string).group(0)
+    print date
+    year_folder = photo_storage + year + '/'
+    contents = os.listdir(year_folder)
+    for folder in contents:
+        if folder.startswith(date):
+            return year_folder + folder
+
+    plain_folder = year_folder + date + '/'
+    os.makedirs(plain_folder)
+    return plain_folder
+
+
+for filename in os.listdir(desktop):
+    if filename.startswith('Screen Shot'):
+        date = re.search(r'\d{4}-\d{2}-\d{2}', filename).group(0)
+        date_folder = get_date_folder(date)
+        print "copying {} to {}".format(filename, date_folder)
+        try:
+            shutil.copy(desktop + filename, date_folder)
+        except shutil.Error:
+            pass
+
+        file_date = dateutil.parser.parse(date)
+        difference = today - file_date
+        if difference > timedelta(days=14):
+            print "deleting {} because it is old"
+            shutil.move(desktop + filename, trash)
