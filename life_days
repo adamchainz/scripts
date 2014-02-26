@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # coding=utf-8
 import sys
 from datetime import datetime, date
@@ -9,7 +9,7 @@ if sys.stdout.isatty():
     bold = make_style(fg='yellow', opts=('bold',))
     redbold = make_style(fg='red', opts=('bold',))
 else:
-    bold = redbold = lambda x:x
+    bold = redbold = lambda x: x
 
 # Calc
 birthday = date(1989, 10, 4)
