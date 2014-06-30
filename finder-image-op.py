@@ -13,14 +13,14 @@ def main():
     command = commands[operation]
 
     for filename in finder_filenames():
-        runnable = command.format(filename=filename)
+        runnable = command.format(filename=filename.strip())
         print(subprocess.check_output(runnable, shell=True))
 
     return 0
 
 
 commands = {
-    "normalize": 'convert "{filename}" -normalize "{filename}"'
+    "normalize": "/usr/local/bin/convert '{filename}' -normalize '{filename}'"
 }
 
 
