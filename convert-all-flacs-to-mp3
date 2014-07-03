@@ -1,5 +1,5 @@
 #!/bin/sh
 for i in *.flac
 do
-    ffmpeg -i "$i" -ab 320k "`basename $i .flac`.mp3"
+    ffmpeg -i "$i" -ab 320k "`basename \"$i\" .flac`.mp3"
 done
