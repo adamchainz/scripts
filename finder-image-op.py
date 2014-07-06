@@ -19,8 +19,12 @@ def main():
     return 0
 
 
+def make_command(args):
+   return "/usr/local/bin/convert '{filename}' " + args + " '{filename}'"
+
 commands = {
-    "normalize": "/usr/local/bin/convert '{filename}' -normalize '{filename}'"
+    "normalize": make_command('-normalize'),
+    "rotate_clockwise": make_command('-rotate 90'),
 }
 
 
