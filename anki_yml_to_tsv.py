@@ -21,13 +21,11 @@ from __future__ import unicode_literals
 from pathlib import Path
 import yaml
 
-MODULE_DIR = Path(__file__).parent.resolve()
-
 
 def main():
-    for p in MODULE_DIR.glob('*.tsv'):
+    for p in Path().glob('*.tsv'):
         p.unlink()
-    for yml_path in MODULE_DIR.glob("*.yml"):
+    for yml_path in Path().glob("*.yml"):
         convert(yml_path)
 
 
