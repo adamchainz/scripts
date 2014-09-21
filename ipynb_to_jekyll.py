@@ -19,7 +19,8 @@ def main():
 
     filename = sys.argv[1]
     notebook = json.load(open(filename))
-    out = open(os.path.splitext(filename)[0] + '.markdown', 'w')
+    out_filename = os.path.splitext(filename)[0] + '.markdown'
+    out = open(out_filename, 'w')
     write = functools.partial(print, file=out)
 
     cells = notebook['worksheets'][0]['cells']
@@ -45,11 +46,13 @@ def main():
                 IPython.embed()
 
             for output in cell['outputs']:
-                if output['output_type'] in ('stream', 'pyout'):
+                if output['output_type'] == 'pyout':
                     write("Out[{}]: {}".format(
                         cell['prompt_number'],
                         ''.join(output['text'])
                     ))
+                elif output['output_type'] == 'stream':
+                    write(''.join(output['text']))
                 elif output['output_type'] == 'pyerr':
                     write('\n'.join(strip_colors(o)
                                     for o in output['traceback']))
@@ -59,6 +62,8 @@ def main():
 
             write("{% endhighlight %}")
         write("")
+
+    print("{} created.".format(out_filename))
 
 
 ansi_escape = re.compile(r'\x1b[^m]*m')
