@@ -7,7 +7,7 @@ import shutil
 
 
 desktop = os.environ['HOME'] + '/Desktop/'
-photo_storage = os.environ['HOME'] + '/Dropbox/Aart/Photos/'
+photo_storage = os.environ['HOME'] + '/Arqbox/Aart/Photos/'
 trash = os.environ['HOME'] + '/.Trash'
 today = datetime.utcnow()
 
@@ -39,5 +39,5 @@ for filename in os.listdir(desktop):
         file_date = dateutil.parser.parse(date)
         difference = today - file_date
         if difference > timedelta(days=14):
-            print "deleting {} because it is old"
+            print "deleting {} because it is old".format(filename)
             shutil.move(desktop + filename, trash)
