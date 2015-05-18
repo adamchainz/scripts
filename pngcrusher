@@ -2,6 +2,7 @@
 import os
 import sys
 import subprocess
+from stat import ST_MODE
 
 
 def run_and_get_output(comm):
@@ -13,10 +14,11 @@ def pngcrush_one(filename):
     sys.stdout.flush()
 
     size_before = os.path.getsize(filename)
+    perm_mask = oct(os.stat(filename)[ST_MODE])[-3:]
 
     run_and_get_output(["pngcrush", filename, "/tmp/tmp.png"])
     run_and_get_output(["mv", "/tmp/tmp.png", filename])
-    run_and_get_output(["chmod", "755", filename])
+    run_and_get_output(["chmod", perm_mask, filename])
 
     size_after = os.path.getsize(filename)
 
