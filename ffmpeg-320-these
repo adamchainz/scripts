@@ -3,12 +3,14 @@ import sys
 import subprocess
 
 
-def run_and_get_output(comm):
-        return subprocess.Popen(comm, stdout=subprocess.PIPE).communicate()[0]
-
-
 def mp3_320ize(filename):
-    run_and_get_output(["ffmpeg", "-i", filename, "-ab", "320k", filename[:-4] + ".mp3"])
+    print subprocess.check_output([
+        "ffmpeg",
+        "-i", filename,
+        "-ab", "320k",
+        filename[:filename.rfind(".")] + ".mp3"
+    ])
+
 
 if __name__ == '__main__':
     if len(sys.argv) < 1:
