@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+import datetime as dt
+import os
+import re
+import shutil
+import subprocess
+
+TRASH_DIR = os.path.expanduser("~/.Trash/")
+
+
+def main():
+    wav_re = re.compile(r'\.wav$', re.I)
+    for wavfile in find_them():
+        if not os.path.exists(wavfile):
+            raise NameError(wavfile)
+        flacfile = wav_re.sub('.flac', wavfile)
+        print(wavfile)
+        if os.path.exists(flacfile):
+            continue
+        convert(wavfile, flacfile)
+
+
+def find_them():
+    names = subprocess.check_output(
+        ['find', '.', '-iname', '*.wav', '-print0'],
+        universal_newlines=True
+    )
+    for name in names.split('\0'):
+        if name:
+            yield name
+
+
+def convert(wavfile, flacfile):
+    return_code = subprocess.call([
+        'ffmpeg',
+        '-i', wavfile,
+        flacfile,
+        '-n',
+        '-compression_level', '12',
+        '-loglevel', '24',
+    ])
+    if return_code == 0:
+        trashit(wavfile)
+        if os.path.exists(wavfile + ".asd"):
+            trashit(wavfile + ".asd")
+
+
+def trashit(filename):
+    basen = os.path.basename(filename)
+    trashed = os.path.join(TRASH_DIR, basen)
+    if os.path.exists(trashed):
+        name, ext = os.path.splitext(basen)
+        date_bit = " ({})".format(dt.datetime.now().isoformat())
+        trashed = os.path.join(TRASH_DIR, name + date_bit + ext)
+    shutil.move(filename, trashed)
+
+
+if __name__ == '__main__':
+    main()
