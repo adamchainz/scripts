@@ -1,27 +1,39 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding=utf-8
 import sys
 from datetime import datetime, date
-from django.utils.termcolors import make_style
 
 # Styles
 if sys.stdout.isatty():
-    bold = make_style(fg='yellow', opts=('bold',))
-    redbold = make_style(fg='red', opts=('bold',))
+    def bold(text):
+        return '\x1b[33;1m' + text + '\x1b[0m'
+
+    def redbold(text):
+        return '\x1b[31;1m' + text + '\x1b[0m'
 else:
-    bold = redbold = lambda x: x
+    bold = redbold = lambda text: text
 
-# Calc
-birthday = date(1989, 10, 4)
-today = datetime.utcnow().date()
+def main():
+    birthday = date(1989, 10, 4)
+    today = datetime.utcnow().date()
 
-day_num = (today - birthday).days
+    day_num = (today - birthday).days
 
-expected = 28506
+    expected = 28506
 
-remaining = expected - day_num
-percentage = "%0.2f" % ((day_num / float(expected)) * 100)
+    remaining = expected - day_num
+    percentage = "%0.2f" % ((day_num / float(expected)) * 100)
 
-print ""
-print bold("Hello Adam,"), "you have been alive", redbold("%i days" % day_num), "and you are projected to live", redbold("%i more" % remaining) + ". " + bold("(" + percentage + "%)")
-print ""
+    sys.stdout.write(
+        "\n" +
+        bold("Hello Adam, ") +
+        "you have been alive " +
+        redbold("{} days ".format(day_num)) +
+        "and you are projected to live " +
+        redbold("{} more. ".format(remaining)) +
+        bold("({}%)".format(percentage)) +
+        "\n\n"
+    )
+
+if __name__ == '__main__':
+    main()
