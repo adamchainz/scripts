@@ -1,0 +1,14 @@
+#!/bin/zsh
+set -ex
+if [ -z "$1" ]
+then
+    echo "Pass the branch name"
+    exit 1
+fi
+
+git checkout master
+git diff --exit-code
+git ffmerge $1
+git push
+git branch -d $1
+git push origin :$1
