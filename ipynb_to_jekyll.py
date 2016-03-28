@@ -31,7 +31,7 @@ def main():
             write(''.join(cell['source']))
         elif cell['cell_type'] == 'code':
             # Can't use ``` or any shortcuts as markdown fails for some code
-            write("{% highlight ipy %}")
+            write("{% highlight ipython %}")
 
             write("In [{}]: {}".format(
                 cell['prompt_number'],
