@@ -1,0 +1,14 @@
+#!/bin/zsh
+set -ex
+if [[ ! -s requirements.in ]]; then
+    echo "Need requirements.in"
+    exit 1
+fi
+git diff --exit-code
+git checkout master
+git checkout -b upgrade_requirements
+pip-compile -r -U
+git add --all
+git commit -m 'Upgrade requirements'
+git push -u origin upgrade_requirements
+hub pull-request -o
