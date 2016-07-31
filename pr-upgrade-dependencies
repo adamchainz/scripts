@@ -6,6 +6,7 @@ if [[ ! -s requirements.in ]]; then
 fi
 git diff --exit-code
 git checkout master
+git pull
 git checkout -b upgrade_requirements
 pip-compile -r -U
 git add --all
