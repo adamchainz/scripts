@@ -12,4 +12,4 @@ pip-compile -r -U
 git add --all
 git commit -m 'Upgrade requirements'
 git push -u origin upgrade_requirements
-hub pull-request -o
+hub pull-request -F - -o <<< "Upgrade requirements"
