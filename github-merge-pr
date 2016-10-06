@@ -10,8 +10,17 @@ else
     fi
 fi
 
+if git rev-parse --verify master >/dev/null 2>&1; then
+    base_branch='master'
+elif git rev-parse --verify develop >/dev/null 2>&1; then
+    base_branch='develop'
+else
+    echo "branches master and develop don't exist, can't figure base branch"
+    exit 1
+fi
+
 git diff --exit-code
-git checkout master
+git checkout $base_branch
 git merge --ff-only "$branch_name"
 git push
 git branch -d "$branch_name"
