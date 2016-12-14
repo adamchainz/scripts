@@ -29,6 +29,7 @@ def main():
 
 links = {
     'billiard': 'https://pypi.python.org/pypi/billiard',
+    'boto': 'http://docs.pythonboto.org/en/latest/#release-notes',
     'boto3': 'https://github.com/boto/boto3/blob/develop/CHANGELOG.rst',
     'botocore': 'https://github.com/boto/botocore/blob/develop/CHANGELOG.rst',
     'celery': 'http://docs.celeryproject.org/en/latest/changelog.html',
