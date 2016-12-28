@@ -6,25 +6,31 @@ import shutil
 import subprocess
 import sys
 
+from termcolor import colored
+
 iphone_dir = os.path.expanduser('~/Arqbox/Aart/Photos/iPhone')
 photo_dir = os.path.expanduser('~/Arqbox/Aart/Photos')
 trash = os.path.expanduser('~/.Trash')
 
+blue = lambda x: colored(x, 'blue')
+red = lambda x: colored(x, 'red')
+
+
 def main():
     thirty_days_ago = dt.date.today() - dt.timedelta(days=30)
     for filename in old_photos():
-        print('Processing', filename)
+        print(filename)
         date_taken = get_date_taken(filename)
         if date_taken is None:
-            print('\t!! No DateTimeOriginal')
+            print(red('\t😓  No DateTimeOriginal'))
             continue
 
         if date_taken > thirty_days_ago:
-            print('\tWas taken < 30 days ago, leaving')
+            print(blue('\tWas taken < 30 days ago, leaving'))
             continue
 
         destination_dir = get_date_dir(date_taken)
-        print('\tMoving to {}'.format(destination_dir))
+        print(blue('\tMoving to {}'.format(destination_dir)))
 
         destination_filename = os.path.join(destination_dir, os.path.basename(filename))
         os.rename(filename, destination_filename)
@@ -32,16 +38,20 @@ def main():
 
 def old_photos():
     for filename in os.listdir(iphone_dir):
-        if filename.lower().endswith(('.jpg', '.jpeg')) and not os.path.islink(filename):
+        if filename.lower().endswith(('.jpg', '.jpeg', '.mov')) and not os.path.islink(filename):
             yield os.path.join(iphone_dir, filename)
 
 
 def get_date_taken(filename):
     output = subprocess.check_output(
-        ['identify', '-verbose', filename],
+        ['exiftool', filename],
         universal_newlines=True,
     )
-    lines = [line for line in output.split('\n') if 'exif:DateTimeOriginal:' in line]
+    if filename.lower().endswith('.mov'):
+        exif_field_name = 'Media Create Date'
+    else:
+        exif_field_name = 'Date/Time Original'
+    lines = [line for line in output.split('\n') if exif_field_name in line]
     if not lines:
         return None
     parsed = date_taken_re.search(lines[0])
