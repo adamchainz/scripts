@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+import datetime as dt
+import os
+import re
+import shutil
+import subprocess
+import sys
+
+iphone_dir = os.path.expanduser('~/Arqbox/Aart/Photos/iPhone')
+photo_dir = os.path.expanduser('~/Arqbox/Aart/Photos')
+trash = os.path.expanduser('~/.Trash')
+
+def main():
+    thirty_days_ago = dt.date.today() - dt.timedelta(days=30)
+    for filename in old_photos():
+        print('Processing', filename)
+        date_taken = get_date_taken(filename)
+        if date_taken is None:
+            print('\t!! No DateTimeOriginal')
+            continue
+
+        if date_taken > thirty_days_ago:
+            print('\tWas taken < 30 days ago, leaving')
+            continue
+
+        destination_dir = get_date_dir(date_taken)
+        print('\tMoving to {}'.format(destination_dir))
+
+        destination_filename = os.path.join(destination_dir, os.path.basename(filename))
+        os.rename(filename, destination_filename)
+
+
+def old_photos():
+    for filename in os.listdir(iphone_dir):
+        if filename.lower().endswith(('.jpg', '.jpeg')) and not os.path.islink(filename):
+            yield os.path.join(iphone_dir, filename)
+
+
+def get_date_taken(filename):
+    output = subprocess.check_output(
+        ['identify', '-verbose', filename],
+        universal_newlines=True,
+    )
+    lines = [line for line in output.split('\n') if 'exif:DateTimeOriginal:' in line]
+    if not lines:
+        return None
+    parsed = date_taken_re.search(lines[0])
+    parsed_types = {k: int(v) for k, v in parsed.groupdict().items()}
+    return dt.date(**parsed_types)
+
+
+date_taken_re = re.compile(r'(?P<year>\d{4}):(?P<month>\d{2}):(?P<day>\d{2}) \d{2}:\d{2}:\d{2}')
+
+
+def get_date_dir(date):
+    year_folder = os.path.join(photo_dir, str(date.year))
+    os.makedirs(year_folder, exist_ok=True)  # Just in case it's a new year
+
+    # Might exist already as date_string + textual name
+    date_string = date.isoformat()
+    for name in os.listdir(year_folder):
+        if name.startswith(date_string):
+            return os.path.join(year_folder, name)
+
+    # Does not exist, create
+    basic_path = os.path.join(year_folder, date_string)
+    os.makedirs(basic_path, exist_ok=True)
+    return basic_path
+
+
+if __name__ == '__main__':
+    main()
