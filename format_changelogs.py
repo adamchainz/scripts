@@ -53,6 +53,7 @@ links = {
     'pytest': 'http://docs.pytest.org/en/latest/changelog.html',
     'pytest-django': 'https://pytest-django.readthedocs.io/en/latest/changelog.html',
     'pytest-randomly': 'https://pypi.python.org/pypi/pytest-randomly',
+    'raven': 'https://github.com/getsentry/raven-python/blob/master/CHANGES',
     'regex': 'https://bitbucket.org/mrabarnett/mrab-regex/commits/branch/default',
     's3transfer': 'https://github.com/boto/s3transfer/blob/develop/CHANGELOG.rst',
     'schema': 'https://github.com/keleshev/schema/commits/master',
