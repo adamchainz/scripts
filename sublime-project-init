@@ -13,6 +13,7 @@ echo '{
                 "*.pyc"
             ],
             "folder_exclude_patterns": [
+                "*.cache",
                 "*.egg-info",
                 ".tox",
                 "build",
