@@ -2,9 +2,7 @@
 import datetime as dt
 import os
 import re
-import shutil
 import subprocess
-import sys
 
 from termcolor import colored
 
@@ -12,8 +10,13 @@ iphone_dir = os.path.expanduser('~/Arqbox/Aart/Photos/iPhone')
 photo_dir = os.path.expanduser('~/Arqbox/Aart/Photos')
 trash = os.path.expanduser('~/.Trash')
 
-blue = lambda x: colored(x, 'blue')
-red = lambda x: colored(x, 'red')
+
+def blue(string):
+    return colored(string, 'blue')
+
+
+def red(string):
+    return colored(string, 'red')
 
 
 def main():
@@ -22,7 +25,7 @@ def main():
         print(filename)
         date_taken = get_date_taken(filename)
         if date_taken is None:
-            print(red('\t😓  No DateTimeOriginal'))
+            print(red('\t😓  Could not find date/time'))
             continue
 
         if date_taken > thirty_days_ago:
@@ -32,13 +35,18 @@ def main():
         destination_dir = get_date_dir(date_taken)
         print(blue('\tMoving to {}'.format(destination_dir)))
 
-        destination_filename = os.path.join(destination_dir, os.path.basename(filename))
+        destination_filename = os.path.join(
+            destination_dir, os.path.basename(filename)
+        )
         os.rename(filename, destination_filename)
 
 
 def old_photos():
     for filename in os.listdir(iphone_dir):
-        if filename.lower().endswith(('.jpg', '.jpeg', '.mov')) and not os.path.islink(filename):
+        if (
+            filename.lower().endswith(('.jpg', '.jpeg', '.mov')) and
+            not os.path.islink(filename)
+        ):
             yield os.path.join(iphone_dir, filename)
 
 
@@ -47,19 +55,47 @@ def get_date_taken(filename):
         ['exiftool', filename],
         universal_newlines=True,
     )
+    lines = output.split('\n')
+
+    exif_date_taken = get_exif_date_taken(filename, lines)
+    if exif_date_taken:
+        return exif_date_taken
+
+    file_date_taken = get_file_date_taken(filename, lines)
+    if file_date_taken:
+        return file_date_taken
+
+    return None
+
+
+def get_exif_date_taken(filename, lines):
     if filename.lower().endswith('.mov'):
         exif_field_name = 'Media Create Date'
     else:
         exif_field_name = 'Date/Time Original'
-    lines = [line for line in output.split('\n') if exif_field_name in line]
+
+    lines = [l for l in lines if exif_field_name in l]
     if not lines:
         return None
-    parsed = date_taken_re.search(lines[0])
+    return extract_datetime(lines[0])
+
+
+def get_file_date_taken(filename, lines):
+    lines = [l for l in lines if 'File Modification Date/Time' in l]
+    if not lines:
+        return None
+    return extract_datetime(lines[0])
+
+
+def extract_datetime(line):
+    parsed = date_taken_re.search(line)
     parsed_types = {k: int(v) for k, v in parsed.groupdict().items()}
     return dt.date(**parsed_types)
 
 
-date_taken_re = re.compile(r'(?P<year>\d{4}):(?P<month>\d{2}):(?P<day>\d{2}) \d{2}:\d{2}:\d{2}')
+date_taken_re = re.compile(
+    r'(?P<year>\d{4}):(?P<month>\d{2}):(?P<day>\d{2}) \d{2}:\d{2}:\d{2}'
+)
 
 
 def get_date_dir(date):
