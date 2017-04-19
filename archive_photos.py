@@ -44,7 +44,7 @@ def main():
 def old_photos():
     for filename in os.listdir(iphone_dir):
         if (
-            filename.lower().endswith(('.jpg', '.jpeg', '.mov')) and
+            filename.lower().endswith(('.jpg', '.jpeg', '.mov', '.png', '.mp4')) and
             not os.path.islink(filename)
         ):
             yield os.path.join(iphone_dir, filename)
