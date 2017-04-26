@@ -21,7 +21,7 @@ def red(string):
 
 def main():
     thirty_days_ago = dt.date.today() - dt.timedelta(days=30)
-    for filename in old_photos():
+    for filename in old_media():
         print(filename)
         date_taken = get_date_taken(filename)
         if date_taken is None:
@@ -41,10 +41,20 @@ def main():
         os.rename(filename, destination_filename)
 
 
-def old_photos():
+FILE_EXTENSIONS = (
+    '.avi',
+    '.jpg',
+    '.jpeg',
+    '.mov',
+    '.mp4',
+    '.png',
+)
+
+
+def old_media():
     for filename in os.listdir(iphone_dir):
         if (
-            filename.lower().endswith(('.jpg', '.jpeg', '.mov', '.png', '.mp4')) and
+            filename.lower().endswith(FILE_EXTENSIONS) and
             not os.path.islink(filename)
         ):
             yield os.path.join(iphone_dir, filename)
