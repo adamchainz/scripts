@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+import argparse
+import sys
+
+import boto3
+
+ec2 = boto3.resource('ec2')
+sts = boto3.client('sts')
+
+parser = argparse.ArgumentParser(
+    prog='ec2-remove-unused-snapshots',
+    description="Remove all snapshots that aren't used by any volumes.",
+)
+parser.add_argument(
+    '--execute',
+    dest='execute',
+    action='store_true',
+    help='If set, will actually delete the snapshots.',
+)
+
+
+def main():
+    args = parser.parse_args(sys.argv[1:])
+
+    i = 0
+    for snapshot_id in unused_snapshot_ids():
+        i += 1
+        print(f'Found snapshot {snapshot_id} to delete')
+        if args.execute:
+            print('Deleting it')
+            ec2.Snapshot(snapshot_id).delete()
+    print(f'{i} snapshots')
+
+
+def unused_snapshot_ids():
+    account_id = sts.get_caller_identity()['Account']
+    snapshot_ids_used_in_amis = set()
+    amis = ec2.images.filter(Filters=[{'Name': 'owner-id', 'Values': [account_id]}])
+    for ami in amis:
+        for block_device in ami.block_device_mappings:
+            snapshot_ids_used_in_amis.add(block_device['Ebs']['SnapshotId'])
+
+    snapshot_ids_used_in_volumes = {v.snapshot_id for v in ec2.volumes.all() if v.snapshot_id}
+
+    our_snapshots = ec2.snapshots.filter(Filters=[
+        {'Name': 'owner-id', 'Values': [account_id]},
+    ])
+
+    return [
+        s.snapshot_id for s in our_snapshots if
+        s.snapshot_id not in snapshot_ids_used_in_amis and
+        s.snapshot_id not in snapshot_ids_used_in_volumes
+    ]
+
+
+if __name__ == '__main__':
+    main()
