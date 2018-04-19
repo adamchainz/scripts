@@ -37,7 +37,7 @@ def main():
 
 
 def purge_image(name, dry_run=False):
-    out = run_command("aws ec2 describe-images --filters Name=name,Values={}".format(name))
+    out = run_command(['aws', 'ec2', 'describe-images', '--filters', "Name=name,Values={}".format(name)])
 
     images = out['Images']
     try:
@@ -46,21 +46,21 @@ def purge_image(name, dry_run=False):
         print("AMI {} does not exist!".format(name))
         return 1
 
-    run_command("aws ec2 deregister-image --image-id {}".format(image['ImageId']), not dry_run)
+    run_command(['aws', 'ec2', 'deregister-image', '--image-id', image['ImageId']], not dry_run)
 
     for device in image['BlockDeviceMappings']:
         if 'Ebs' in device:
-            run_command("aws ec2 delete-snapshot --snapshot-id {}".format(device['Ebs']['SnapshotId']), not dry_run)
+            run_command(['aws', 'ec2', 'delete-snapshot', '--snapshot-id', device['Ebs']['SnapshotId']], not dry_run)
 
     return 0
 
 
 def run_command(command, run=True):
-    print command
+    print(' '.join(command))
     if not run:
         return
     else:
-        out = subprocess.check_output(command.split(" "))
+        out = subprocess.check_output(command)
         if out:
             return json.loads(out)
 
