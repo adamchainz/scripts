@@ -14,7 +14,7 @@ today = datetime.utcnow()
 
 def get_date_folder(date_string):
     year = re.search(r'\d{4}', date_string).group(0)
-    print date
+    print(date)
     year_folder = photo_storage + year + '/'
     contents = os.listdir(year_folder)
     for folder in contents:
@@ -30,7 +30,7 @@ for filename in os.listdir(desktop):
     if filename.startswith('Screen Shot'):
         date = re.search(r'\d{4}-\d{2}-\d{2}', filename).group(0)
         date_folder = get_date_folder(date)
-        print "copying {} to {}".format(filename, date_folder)
+        print("copying {} to {}".format(filename, date_folder))
         try:
             shutil.copy(desktop + filename, date_folder)
         except shutil.Error:
@@ -39,5 +39,5 @@ for filename in os.listdir(desktop):
         file_date = dateutil.parser.parse(date)
         difference = today - file_date
         if difference > timedelta(days=14):
-            print "deleting {} because it is old".format(filename)
+            print("deleting {} because it is old".format(filename))
             shutil.move(desktop + filename, trash)
