@@ -10,11 +10,13 @@ echo '{
         {
             "path": ".",
             "file_exclude_patterns": [
+                ".coverage*",
                 "*.pyc"
             ],
             "folder_exclude_patterns": [
                 "*.cache",
                 "*.egg-info",
+                ".pytest_cache",
                 ".tox",
                 "build",
                 "dist"
