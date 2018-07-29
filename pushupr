@@ -17,9 +17,10 @@ def main():
         print(f"Remote URL {remote_url} isn't a github url", file=sys.stderr)
         sys.exit(0)
     repo_name = repo_git_name[:-len('.git')]
+    owner = repo_name.split('/')[0]
     print(repo_name)
 
-    make_pr_url = f'https://github.com/{repo_name}/compare/{branch_name}?expand=1'
+    make_pr_url = f'https://github.com/{repo_name}/compare/master...{owner}:{branch_name}?expand=1'
     subprocess.check_output(['open', make_pr_url])
 
 
