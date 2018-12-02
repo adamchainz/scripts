@@ -24,7 +24,7 @@ import yaml
 def main():
     for p in Path().glob('*.tsv'):
         p.unlink()
-    for yml_path in Path().glob("*.yml"):
+    for yml_path in sorted(Path().glob("*.yml")):
         convert(yml_path)
 
 
