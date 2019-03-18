@@ -32,7 +32,7 @@ def convert(yml_path):
     print("Converting", yml_path)
     text = yml_path.open('r', encoding='utf8').read()
 
-    all_docs = [doc for doc in yaml.load_all(text)
+    all_docs = [doc for doc in yaml.load_all(text, Loader=yaml.SafeLoader)
                 if isinstance(doc, list) and len(doc)]
 
     if not len(all_docs):
@@ -55,6 +55,7 @@ def lineify(doc):
     front = str(doc[0]).replace('\n', '<br>').strip()
     back = str(doc[1]).replace('\n', '<br>').strip()
     return "{}\t{}\n".format(front, back)
+
 
 if __name__ == '__main__':
     main()
