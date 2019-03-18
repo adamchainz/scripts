@@ -8,7 +8,7 @@ git diff --exit-code
 git checkout master
 git pull
 git checkout -b upgrade_requirements
-python2.7 -m piptools compile -r -U
+python3 -m piptools compile -r -U
 git add --all
 git commit -m 'Upgrade requirements'
 git push -u origin upgrade_requirements
