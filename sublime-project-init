@@ -16,6 +16,8 @@ echo '{
             "folder_exclude_patterns": [
                 "*.cache",
                 "*.egg-info",
+                ".egg",
+                ".mypy_cache",
                 ".pytest_cache",
                 ".tox",
                 "build",
