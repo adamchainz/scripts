@@ -13,14 +13,16 @@ def main():
         sys.exit(0)
 
     who_at_where, repo_git_name = remote_url.split(':')
-    if who_at_where != 'git@github.com':
-        print(f"Remote URL {remote_url} isn't a github url", file=sys.stderr)
-        sys.exit(0)
-    repo_name = repo_git_name[:-len('.git')]
-    print(repo_name)
-
-    make_pr_url = f'https://github.com/{repo_name}/compare/{branch_name}?expand=1'
-    subprocess.check_output(['open', make_pr_url])
+    if who_at_where == 'git@github.com':
+        repo_name = repo_git_name[:-len('.git')]
+        make_pr_url = f'https://github.com/{repo_name}/compare/{branch_name}?expand=1'
+        subprocess.check_output(['open', make_pr_url])
+    elif who_at_where == 'git@bitbucket.org':
+        repo_name = repo_git_name[:-len('.git')]
+        make_pr_url = f'https://bitbucket.org/{repo_name}/pull-requests/new?source={branch_name}'
+        subprocess.check_output(['open', make_pr_url])
+    else:
+        print(f"Remote URL {remote_url} isn't on a known Git hosting platform", file=sys.stderr)
 
 
 if __name__ == '__main__':
