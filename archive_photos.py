@@ -80,14 +80,14 @@ def get_date_taken(filename):
 
 def get_exif_date_taken(filename, lines):
     if filename.lower().endswith('.mov'):
-        exif_field_name = 'Media Create Date'
+        exif_field_names = ('Media Create Date', 'File Modification Date/Time')
     else:
-        exif_field_name = 'Date/Time Original'
+        exif_field_names = ('Date/Time Original',)
 
-    lines = [l for l in lines if exif_field_name in l]
+    lines = [l for l in lines if l.startswith(exif_field_names)]
     if not lines:
         return None
-    return extract_datetime(lines[0])
+    return min(extract_datetime(l) for l in lines)
 
 
 def get_file_date_taken(filename, lines):
