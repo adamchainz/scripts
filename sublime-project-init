@@ -20,8 +20,11 @@ echo '{
                 ".mypy_cache",
                 ".pytest_cache",
                 ".tox",
+                "__pycache__",
                 "build",
-                "dist"
+                "dist",
+                "htmlcov",
+                "venv"
             ],
         }
     ],
