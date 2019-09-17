@@ -55,8 +55,10 @@ def convert(wavfile, flacfile):
     ])
     if return_code == 0:
         trashit(wavfile)
+        if os.path.exists(flacfile + ".asd"):
+            trashit(flacfile + ".asd")
         if os.path.exists(wavfile + ".asd"):
-            trashit(wavfile + ".asd")
+            shutil.move(wavfile + ".asd", flacfile + ".asd")
 
 
 def trashit(filename):
