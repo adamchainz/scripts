@@ -2,7 +2,9 @@
 import datetime as dt
 import os
 import re
+import shutil
 import subprocess
+import time
 
 from termcolor import colored
 
@@ -38,14 +40,31 @@ def main():
         destination_filename = os.path.join(destination_dir, os.path.basename(filename))
         os.rename(filename, destination_filename)
 
+        if filename.lower().endswith(('.jpg', '.jpeg')):
+            iphone_live_movie_filename = filename.rsplit('.', 1)[0] + '.mov'
+            if os.path.isfile(iphone_live_movie_filename):
+                print(blue("\tTrashing related iPhone live mov file"))
+                shutil.move(iphone_live_movie_filename, trash)
+
+            iphone_aae_filename = filename.rsplit('.', 1)[0] + '.aae'
+            if os.path.isfile(iphone_aae_filename):
+                print(blue("\tTrashing related iPhone photo edits AAE file"))
+                shutil.move(iphone_aae_filename, trash)
+
+        time.sleep(1)
+
 
 FILE_EXTENSIONS = (".avi", ".jpg", ".jpeg", ".mov", ".mp4", ".png")
 
 
 def old_media():
-    for filename in os.listdir(iphone_dir):
+    for filename in sorted(os.listdir(iphone_dir)):
         if filename.lower().endswith(FILE_EXTENSIONS) and not os.path.islink(filename):
-            yield os.path.join(iphone_dir, filename)
+            full_filename = os.path.join(iphone_dir, filename)
+            # mov files can be removed during the loop if they are iPhone live
+            # photo movies
+            if os.path.exists(full_filename):
+                yield full_filename
 
 
 def get_date_taken(filename):
