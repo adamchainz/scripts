@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+import argparse
+import datetime as dt
+import os
+import shutil
+import subprocess
+
+parser = argparse.ArgumentParser(
+    description="""
+    Run ffmpeg to convert all wavs and aifs to flacs.
+    """
+)
+parser.add_argument('-r', '--recursive',
+                    action='store_true',
+                    help="Check recursively")
+
+TRASH_DIR = os.path.expanduser("~/.Trash/")
+
+
+def main():
+    args = parser.parse_args()
+
+    for original_filename in find_them(recursive=args.recursive):
+        print(original_filename)
+        flac_filename = original_filename.rsplit('.', 1)[0] + '.flac'
+        if os.path.exists(flac_filename):
+            print(f"\t{flac_filename} already exists!")
+            continue
+        convert(original_filename, flac_filename)
+
+
+def find_them(recursive=False):
+    command = ['find', '.', '-iname', '*.wav', '-or', '-iname', '*.aif']
+    if not recursive:
+        command.extend(['-depth', '1'])
+    command.extend(['-print0'])
+
+    names = subprocess.check_output(command, universal_newlines=True)
+    for name in names.split('\0'):
+        if name:
+            yield name
+
+
+def convert(original_filename, flac_filename):
+    return_code = subprocess.call([
+        'ffmpeg',
+        '-i',
+        original_filename,
+        '-n',
+        '-compression_level',
+        '12',
+        '-loglevel',
+        '24',
+        flac_filename,
+    ])
+    if return_code == 0:
+        trash_file(original_filename)
+        if os.path.exists(flac_filename + ".asd"):
+            trash_file(flac_filename + ".asd")
+        if os.path.exists(original_filename + ".asd"):
+            shutil.move(original_filename + ".asd", flac_filename + ".asd")
+
+
+def trash_file(filename):
+    base_filename = os.path.basename(filename)
+    trash_filename = os.path.join(TRASH_DIR, base_filename)
+    if os.path.exists(trash_filename):
+        name, ext = os.path.splitext(base_filename)
+        date_bit = " ({})".format(dt.datetime.now().isoformat())
+        trash_filename = os.path.join(TRASH_DIR, name + date_bit + ext)
+    shutil.move(filename, trash_filename)
+
+
+if __name__ == '__main__':
+    main()
