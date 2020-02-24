@@ -8,9 +8,7 @@ git diff --exit-code
 git checkout master
 git pull
 git checkout -b upgrade_requirements
-cd requirements || exit 1
-./compile.sh --upgrade
-cd .. || exit 1
+./requirements/compile.py --upgrade
 git add --all
 git commit -m 'Upgrade requirements'
 git push -u origin upgrade_requirements
