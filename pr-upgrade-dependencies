@@ -12,4 +12,5 @@ git checkout -b upgrade_requirements
 git add --all
 git commit -m 'Upgrade requirements'
 git push -u origin upgrade_requirements
-hub pull-request -F - -o <<< "Upgrade requirements"
+gh pr create --fill
+gh pr view --web
