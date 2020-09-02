@@ -9,8 +9,8 @@ sd --string-mode 'tox tox-gh-actions' 'tox' .github/workflows/main.yml
 
 # shellcheck disable=SC2016
 sd --string-mode '      run: python -m tox' '      run: |
-      ENV_PREFIX=$(tr -d "." <<< "py${{ matrix.python-version }}-")
-      TOXENV=$(tox --listenvs | grep $ENV_PREFIX | tr '"'"'\n'"'"' '"'"','"'"') python -m tox' .github/workflows/main.yml
+        ENV_PREFIX=$(tr -d "." <<< "py${{ matrix.python-version }}-")
+        TOXENV=$(tox --listenvs | grep $ENV_PREFIX | tr '"'"'\n'"'"' '"'"','"'"') python -m tox' .github/workflows/main.yml
 
 sd --flags ms '\[gh-actions\][^\[]*\[' '[' tox.ini
 
