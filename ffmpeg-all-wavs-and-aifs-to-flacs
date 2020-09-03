@@ -30,7 +30,7 @@ def main():
 
 
 def find_them(recursive=False):
-    command = ['find', '.', '-iname', '*.wav', '-or', '-iname', '*.aif']
+    command = ['find', '.', '-type', 'f', '(', '-iname', '*.wav', '-or', '-iname', '*.aif', ')']
     if not recursive:
         command.extend(['-depth', '1'])
     command.extend(['-print0'])
