@@ -18,6 +18,7 @@ echo '{
                 "*.egg-info",
                 ".egg",
                 ".mypy_cache",
+                ".nox",
                 ".pytest_cache",
                 ".tox",
                 "__pycache__",
