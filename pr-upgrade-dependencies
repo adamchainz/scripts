@@ -9,7 +9,7 @@ git checkout master
 git pull
 git checkout -b upgrade_requirements
 ./requirements/compile.py --upgrade
-git add --all
+git add ./requirements
 git commit -m 'Upgrade requirements'
 git push -u origin upgrade_requirements
 gh pr create --fill
