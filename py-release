@@ -16,8 +16,7 @@ sd 'version = .*' "version = $version" setup.cfg
 date=$(date '+%Y-%m-%d' | tr -d '\n')
 versionline="$version ($date)"
 # shellcheck disable=SC2039
-underline=$(printf -- '-%.0s' {1..${#versionline}})
-
+underline=$(sed 's/./-/g' <<< "$versionline")
 sd -f m '(=======
 History
 =======)' "\$1
