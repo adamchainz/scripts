@@ -9,7 +9,7 @@ if [ "$version" = "" ]; then
 fi
 
 git diff --exit-code
-git checkout master
+git checkout main
 git pull
 
 sd 'version = .*' "version = $version" setup.cfg
@@ -32,6 +32,6 @@ PIP_REQUIRE_VIRTUALENV='' python -m build
 twine check dist/*
 twine upload --sign dist/*
 
-git push origin master
+git push origin main
 git tag "$version"
 git push --tags origin "$version"
