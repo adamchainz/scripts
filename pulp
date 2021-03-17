@@ -24,7 +24,11 @@ def main():
         if line.startswith(" - [deleted]")
     ]
     for branch in deleted_branches:
-        subprocess.run(["git", "branch", "-D", branch])
+        check_proc = subprocess.run(
+            ["git", "show-ref", "--quiet", "--verify", "--", f"refs/heads/{branch}"]
+        )
+        if check_proc.returncode == 0:
+            subprocess.run(["git", "branch", "-D", branch])
 
 
 if __name__ == "__main__":
