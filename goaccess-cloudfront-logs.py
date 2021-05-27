@@ -72,6 +72,8 @@ def main():
             "CLOUDFRONT",
             "--agent-list",
             "--no-query-string",
+            "--http-protocol",
+            "no",
             "--ignore-crawlers",
             "--output",
             "index.html",
