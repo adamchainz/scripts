@@ -64,21 +64,6 @@ def main():
 
                 executor.submit(download_file, obj.key, dest)
 
-    # Old slower download with 's3 sync'
-    # subprocess.run(
-    #     [
-    #         "aws",
-    #         "s3",
-    #         "sync",
-    #         f"s3://{BUCKET}",
-    #         ".",
-    #         "--exclude",
-    #         "*",
-    #         "--include",
-    #         f"{PREFIX}.{glob_zip(*dates)}-*",
-    #     ]
-    # )
-
     print("Analyzing...")
     goaccess = subprocess.Popen(
         [
