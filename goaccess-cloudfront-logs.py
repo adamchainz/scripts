@@ -12,7 +12,7 @@ CACHE_DIR = Path("~/.cache/goaccess-cloudfront-logs").expanduser()
 
 BUCKET = "adamj-eu-cloudfrontlogss3bucket-kufnb7l9dmho"
 PREFIX = "E2KFDZF2ZTMT0H"
-DAYS = 30
+DAYS = 60
 
 
 def main():
