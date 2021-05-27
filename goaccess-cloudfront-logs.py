@@ -3,6 +3,7 @@ import datetime as dt
 import gzip
 import os
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import boto3
@@ -34,28 +35,34 @@ def main():
     print("Downloading logs...")
     s3 = boto3.resource("s3")
     bucket = s3.Bucket(BUCKET)
-    for date in dates:
-        if date != today.isoformat():
-            try:
-                next(prefix_dir.glob(f"{PREFIX}.{date}*"))
-            except StopIteration:
-                already_have_files = False
-            else:
-                already_have_files = True
 
-            if already_have_files:
-                continue
+    def download_file(key, dest):
+        if dest.exists():
+            return
+        print(key)
+        s3.meta.client.download_file(
+            BUCKET,
+            key,
+            str(dest),
+        )
 
-        for obj in bucket.objects.filter(Prefix=f"{PREFIX}.{date}"):
-            dest = prefix_dir / obj.key
-            if dest.exists():
-                continue
-            print(obj.key)
-            s3.meta.client.download_file(
-                BUCKET,
-                obj.key,
-                str(dest),
-            )
+    with ThreadPoolExecutor() as executor:
+        for date in dates:
+            if date != today.isoformat():
+                try:
+                    next(prefix_dir.glob(f"{PREFIX}.{date}*"))
+                except StopIteration:
+                    already_have_files = False
+                else:
+                    already_have_files = True
+
+                if already_have_files:
+                    continue
+
+            for obj in bucket.objects.filter(Prefix=f"{PREFIX}.{date}"):
+                dest = prefix_dir / obj.key
+
+                executor.submit(download_file, obj.key, dest)
 
     # Old slower download with 's3 sync'
     # subprocess.run(
