@@ -32,6 +32,10 @@ def main():
                 balance,
             ) = row
             reference = ",".join(reference_fragments)
+            if money_in == '':
+                money_in = '0'
+            if money_out == '':
+                money_out = '0'
             amount = str(Decimal(money_in) - Decimal(money_out))
 
             writer.writerow([date, amount, reference])
