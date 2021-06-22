@@ -30,7 +30,7 @@ git commit -m "Version $version"
 rm -rf build dist src/*.egg-info
 PIP_REQUIRE_VIRTUALENV='' python -m build
 twine check dist/*
-twine upload --sign dist/*
+twine upload dist/*
 
 git push origin main
 git tag "$version"
