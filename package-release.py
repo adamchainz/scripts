@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse
 import datetime as dt
+import os
 import subprocess
 import sys
 from configparser import ConfigParser
@@ -63,7 +64,7 @@ def main(argv=None) -> int:
     if sdist_only:
         run(["python", "setup.py", "clean", "sdist"])
     else:
-        run(["python", "-m", "build"], env={"PIP_REQUIRE_VIRTUALENV": ""})
+        run(["python", "-m", "build"], env={**os.environ, "PIP_REQUIRE_VIRTUALENV": ""})
 
     run(["twine", "check", *glob("dist/*")])
     run(["twine", "upload", *glob("dist/*")])
