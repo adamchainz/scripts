@@ -46,7 +46,7 @@ def main():
             str(dest),
         )
 
-    with ThreadPoolExecutor() as executor:
+    with ThreadPoolExecutor(max_workers=4) as executor:
         for date in dates:
             if date != today.isoformat():
                 try:
@@ -88,22 +88,6 @@ def main():
 
     print("Opening...")
     subprocess.run(["open", str((prefix_dir / "index.html").resolve())])
-
-
-def glob_zip(*args):
-    """
-    Return a glob that matches any of the given inputs
-    e.g. for (2020, 2021) output '202[01]'
-    """
-    out = ""
-    char_sets = [set(items) for items in zip(*args)]
-    for char_set in char_sets:
-        if len(char_set) == 1:
-            out += next(iter(char_set))
-        else:
-            out += "[" + "".join(sorted(char_set)) + "]"
-
-    return out
 
 
 if __name__ == "__main__":
