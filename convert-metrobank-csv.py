@@ -2,13 +2,19 @@
 """
 Convert the Metrobank CSV to one ready for import into FreeAgent.
 """
+import argparse
 import csv
+import datetime as dt
 import sys
 from decimal import Decimal
 
 
-def main():
-    filename = sys.argv[1]
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("filename", type=str)
+    args = parser.parse_args(argv)
+    filename = args.filename
+
     with open(filename) as fp:
         reader = csv.reader(fp)
         writer = csv.writer(sys.stdout)
@@ -21,25 +27,28 @@ def main():
             if not row:
                 continue
 
-            # The number of columns varies because Metrobank doesn't escape
-            # commas in the reference. This fixes it.
             (
-                date,
-                *reference_fragments,
+                date_raw,
+                reference,
                 transaction_type,
                 money_in,
                 money_out,
                 balance,
             ) = row
-            reference = ",".join(reference_fragments)
-            if money_in == '':
-                money_in = '0'
-            if money_out == '':
-                money_out = '0'
+
+            date = dt.datetime.strptime(date_raw, "%d %B %Y").strftime("%d/%m/%Y")
+
+            if money_in == "":
+                money_in = "0"
+            if money_out == "":
+                money_out = "0"
+
             amount = str(Decimal(money_in) - Decimal(money_out))
 
             writer.writerow([date, amount, reference])
 
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    exit(main())
