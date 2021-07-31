@@ -24,22 +24,23 @@ def main():
     prefix_dir.mkdir(parents=True, exist_ok=True)
     os.chdir(prefix_dir)
 
-    print("Removing logs > 180 days old...")
+    print("Removing logs > 180 days old", end="", flush=True)
     cutoff = today - dt.timedelta(days=180)
     for path in prefix_dir.glob(f"{PREFIX}.*"):
         date = path.parts[-1][len(PREFIX) + 1 :][:10]
         if dt.date.fromisoformat(date) < cutoff:
-            print(path.parts[-1])
+            print(".", end="")
             path.unlink()
+    print()
 
-    print("Downloading logs...")
+    print("Downloading logs", end="", flush=True)
     s3 = boto3.resource("s3")
     bucket = s3.Bucket(BUCKET)
 
     def download_file(key, dest):
         if dest.exists():
             return
-        print(key)
+        print(".", end="", flush=True)
         s3.meta.client.download_file(
             BUCKET,
             key,
@@ -64,6 +65,8 @@ def main():
 
                 executor.submit(download_file, obj.key, dest)
 
+    print("")
+
     print("Analyzing...")
     goaccess = subprocess.Popen(
         [
@@ -79,14 +82,12 @@ def main():
             "index.html",
         ],
         stdin=subprocess.PIPE,
-        # stderr=subprocess.DEVNULL,
     )
     for date in dates:
         for logfile in prefix_dir.glob(f"{PREFIX}.{date}*"):
             with gzip.open(logfile) as lfp:
                 goaccess.stdin.write(lfp.read())
 
-    print("Opening...")
     subprocess.run(["open", str((prefix_dir / "index.html").resolve())])
 
 
