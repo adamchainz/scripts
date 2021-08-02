@@ -85,6 +85,11 @@ def main(argv: list[str] | None = None) -> int:
             "--http-protocol",
             "no",
             "--ignore-crawlers",
+
+            # IP did a massive crawl on 2021-08-02:
+            "--exclude-ip",
+            "45.88.3.145",
+
             "--output",
             "index.html",
         ],
