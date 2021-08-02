@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+from __future__ import annotations
+
+import argparse
 import datetime as dt
 import gzip
 import os
@@ -12,12 +15,16 @@ CACHE_DIR = Path("~/.cache/goaccess-cloudfront-logs").expanduser()
 
 BUCKET = "adamj-eu-cloudfrontlogss3bucket-kufnb7l9dmho"
 PREFIX = "E2KFDZF2ZTMT0H"
-DAYS = 60
 
 
-def main():
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--days", type=int, default=60)
+    args = parser.parse_args(argv)
+    days = args.days
+
     today = dt.date.today()
-    dates = [(today - dt.timedelta(days=n)).isoformat() for n in range(DAYS + 1)]
+    dates = [(today - dt.timedelta(days=n)).isoformat() for n in range(days)]
     dates.reverse()
 
     prefix_dir = CACHE_DIR / PREFIX
@@ -88,8 +95,13 @@ def main():
             with gzip.open(logfile) as lfp:
                 goaccess.stdin.write(lfp.read())
 
-    subprocess.run(["open", str((prefix_dir / "index.html").resolve())])
+    goaccess.stdin.close()
+    goaccess.wait()
+
+    subprocess.run(["open", str((prefix_dir / "index.html").resolve())], check=True)
+
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    exit(main())
