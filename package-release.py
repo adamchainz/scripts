@@ -23,6 +23,13 @@ def main(argv=None) -> int:
     version = args.version
     sdist_only = args.sdist_only
 
+    if os.environ.get("VIRTUAL_ENV"):
+        print(
+            "❌ Use system Python not a virtual environment",
+            file=sys.stderr,
+        )
+        return 1
+
     run(["git", "diff", "--exit-code"])
     run(["git", "checkout", "main"])
     run(["git", "pull"])
