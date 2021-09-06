@@ -54,7 +54,7 @@ def main(argv: list[str] | None = None) -> int:
             str(dest),
         )
 
-    with ThreadPoolExecutor(max_workers=4) as executor:
+    with ThreadPoolExecutor(max_workers=16) as executor:
         for date in dates:
             if date != today.isoformat():
                 try:
@@ -85,11 +85,9 @@ def main(argv: list[str] | None = None) -> int:
             "--http-protocol",
             "no",
             "--ignore-crawlers",
-
             # IP did a massive crawl on 2021-08-02:
             "--exclude-ip",
             "45.88.3.145",
-
             "--output",
             "index.html",
         ],
