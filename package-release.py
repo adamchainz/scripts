@@ -82,4 +82,4 @@ def main(argv=None) -> int:
 
 
 if __name__ == "__main__":
-    exit(main())
+    raise SystemExit(main())
