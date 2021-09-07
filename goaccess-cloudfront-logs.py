@@ -88,6 +88,9 @@ def main(argv: list[str] | None = None) -> int:
             # IP did a massive crawl on 2021-08-02:
             "--exclude-ip",
             "45.88.3.145",
+            # IP did a massive crawl on 2021-09-06:
+            "--exclude-ip",
+            "5.183.213.186",
             "--output",
             "index.html",
         ],
