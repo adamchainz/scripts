@@ -8,6 +8,20 @@ import sys
 
 
 def main():
+    changes_proc = subprocess.run(["git", "diff", "--exit-code"], capture_output=True)
+    if changes_proc.returncode != 0:
+        print("Found changes, exiting", file=sys.stderr)
+        sys.exit(1)
+
+    main_proc = subprocess.run(
+        ["git", "rev-parse", "--quiet", "--verify", "main"], capture_output=True
+    )
+    if main_proc.returncode == 0:
+        default_branch = "main"
+    else:
+        default_branch = "master"
+    subprocess.run(["git", "switch", default_branch])
+
     result = subprocess.run(["git", "pull", "--prune"], capture_output=True)
 
     stdout = result.stdout.decode()
