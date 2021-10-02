@@ -85,6 +85,8 @@ def main(argv: list[str] | None = None) -> int:
             "--http-protocol",
             "no",
             "--ignore-crawlers",
+            "--static-file",
+            ".xml",
             # bad IP’s
             "--exclude-ip",
             "45.88.3.145",
