@@ -6,6 +6,7 @@ import datetime as dt
 import gzip
 import os
 import subprocess
+from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -17,7 +18,7 @@ BUCKET = "adamj-eu-cloudfrontlogss3bucket-kufnb7l9dmho"
 PREFIX = "E2KFDZF2ZTMT0H"
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--days", type=int, default=60)
     args = parser.parse_args(argv)
