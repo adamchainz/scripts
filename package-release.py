@@ -102,10 +102,17 @@ def main(argv=None) -> int:
             text=True,
         ).stdout
     )
-    check_suites = checks_data["data"]["repository"]["object"]["checkSuites"][
-        "nodes"
+    check_suites = checks_data["data"]["repository"]["object"]["checkSuites"]["nodes"]
+    check_suites = [
+        s
+        for s in check_suites
+        if (
+            s["app"] is not None
+            # Banned apps: they show up in pytest org where other repos use
+            # them, but I don't
+            and s["app"]["name"] not in ("Travis CI", "AppVeyor")
+        )
     ]
-    check_suites = [s for s in check_suites if s["app"] is not None]
     if not all(s["conclusion"] == "SUCCESS" for s in check_suites):
         print("❌ Not all checks are successful:", file=sys.stderr)
         for check_suite in check_suites:
