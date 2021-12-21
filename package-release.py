@@ -108,9 +108,9 @@ def main(argv=None) -> int:
         for s in check_suites
         if (
             s["app"] is not None
-            # Banned apps: they show up in pytest org where other repos use
-            # them, but I don't
-            and s["app"]["name"] not in ("Travis CI", "AppVeyor")
+            # Ignored apps: I don't use Dependabot, and Travis CI and AppVeyor
+            # show up in pytest org where other repos use them, but I don't
+            and s["app"]["name"] not in ("Dependabot", "Travis CI", "AppVeyor")
         )
     ]
     if not all(s["conclusion"] == "SUCCESS" for s in check_suites):
