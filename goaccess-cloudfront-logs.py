@@ -21,12 +21,15 @@ PREFIX = "E2KFDZF2ZTMT0H"
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--days", type=int, default=60)
+    parser.add_argument("--dates", type=str, nargs="*")
     args = parser.parse_args(argv)
     days = args.days
+    dates: list[str] = args.dates
 
     today = dt.date.today()
-    dates = [(today - dt.timedelta(days=n)).isoformat() for n in range(days)]
-    dates.reverse()
+    if not args.dates:
+        dates = [(today - dt.timedelta(days=n)).isoformat() for n in range(days)]
+        dates.reverse()
 
     prefix_dir = CACHE_DIR / PREFIX
     prefix_dir.mkdir(parents=True, exist_ok=True)
