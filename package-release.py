@@ -39,6 +39,14 @@ def main(argv=None) -> int:
     config_parser = ConfigParser()
     config_parser.read(["setup.cfg"])
     current_version = Version(config_parser.get("metadata", "version"))
+
+    if version == "major":
+        version = f"{current_version.major + 1}.0.0"
+    elif version == "minor":
+        version = f"{current_version.major}.{current_version.minor + 1}.0"
+    elif version == "patch":
+        version = f"{current_version.major}.{current_version.minor}.{current_version.micro + 1}"
+
     if Version(version) <= current_version:
         print(
             f"❌ Given version {version} < current version {current_version}",
