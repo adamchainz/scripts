@@ -7,6 +7,7 @@ git pull
 
 sd ' +- 3\.6\n' '' .github/workflows/main.yml
 sd ' +py36.*\n' '' tox.ini
+sd -s 'py{36,37' 'py{37' tox.ini
 sd -s "target-version = ['py36']" "target-version = ['py37']" pyproject.toml
 sd '\[--py36-plus' '[--py37-plus' .pre-commit-config.yaml
 sd -s "Python 3.6 to " "Python 3.7 to " README.rst
