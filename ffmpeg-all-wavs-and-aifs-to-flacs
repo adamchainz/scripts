@@ -4,15 +4,14 @@ import datetime as dt
 import os
 import shutil
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 
 parser = argparse.ArgumentParser(
     description="""
     Run ffmpeg to convert all wavs and aifs to flacs.
     """
 )
-parser.add_argument('-r', '--recursive',
-                    action='store_true',
-                    help="Check recursively")
+parser.add_argument("-r", "--recursive", action="store_true", help="Check recursively")
 
 TRASH_DIR = os.path.expanduser("~/.Trash/")
 
@@ -20,39 +19,54 @@ TRASH_DIR = os.path.expanduser("~/.Trash/")
 def main():
     args = parser.parse_args()
 
-    for original_filename in find_them(recursive=args.recursive):
-        print(original_filename)
-        flac_filename = original_filename.rsplit('.', 1)[0] + '.flac'
-        if os.path.exists(flac_filename):
-            print(f"\t{flac_filename} already exists!")
-            continue
-        convert(original_filename, flac_filename)
+    with ThreadPoolExecutor(max_workers=16) as executor:
+        for original_filename in find_them(recursive=args.recursive):
+            executor.submit(convert, original_filename)
 
 
 def find_them(recursive=False):
-    command = ['find', '.', '-type', 'f', '(', '-iname', '*.wav', '-or', '-iname', '*.aif', ')']
+    command = [
+        "find",
+        ".",
+        "-type",
+        "f",
+        "(",
+        "-iname",
+        "*.wav",
+        "-or",
+        "-iname",
+        "*.aif",
+        ")",
+    ]
     if not recursive:
-        command.extend(['-depth', '1'])
-    command.extend(['-print0'])
+        command.extend(["-depth", "1"])
+    command.extend(["-print0"])
 
     names = subprocess.check_output(command, universal_newlines=True)
-    for name in names.split('\0'):
+    for name in names.split("\0"):
         if name:
             yield name
 
 
-def convert(original_filename, flac_filename):
-    return_code = subprocess.call([
-        'ffmpeg',
-        '-i',
-        original_filename,
-        '-n',
-        '-compression_level',
-        '12',
-        '-loglevel',
-        '24',
-        flac_filename,
-    ])
+def convert(original_filename):
+    print(original_filename)
+    flac_filename = original_filename.rsplit(".", 1)[0] + ".flac"
+    if os.path.exists(flac_filename):
+        print(f"\t{flac_filename} already exists!")
+        return
+    return_code = subprocess.call(
+        [
+            "ffmpeg",
+            "-i",
+            original_filename,
+            "-n",
+            "-compression_level",
+            "12",
+            "-loglevel",
+            "24",
+            flac_filename,
+        ]
+    )
     if return_code == 0:
         trash_file(original_filename)
         if os.path.exists(flac_filename + ".asd"):
@@ -71,5 +85,5 @@ def trash_file(filename):
     shutil.move(filename, trash_filename)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
