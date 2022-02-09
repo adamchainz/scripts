@@ -182,7 +182,7 @@ def main(argv=None) -> int:
     run(["twine", "check", *glob("dist/*")])
     run(["twine", "upload", *glob("dist/*")])
 
-    run(["git", "push", "origin", "main"])
+    run(["git", "push", "origin", default_branch])
     run(["git", "tag", version])
     run(["git", "push", "--tags", "origin", version])
 
