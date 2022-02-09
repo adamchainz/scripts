@@ -21,9 +21,11 @@ def main(argv=None) -> int:
     )
     parser.add_argument("version")
     parser.add_argument("--sdist-only", action="store_true")
+    parser.add_argument("--skip-history", action="store_true")
     args = parser.parse_args(argv)
     version = args.version
     sdist_only = args.sdist_only
+    skip_history = args.skip_history
 
     if os.environ.get("VIRTUAL_ENV"):
         print(
@@ -145,22 +147,26 @@ def main(argv=None) -> int:
         ["sd", "version = .*", f"version = {version}", "setup.cfg"],
     )
 
-    today = dt.date.today().isoformat()
-    version_line = f"{version} ({today})"
-    underline = "-" * len(version_line)
+    if not skip_history:
+        today = dt.date.today().isoformat()
+        version_line = f"{version} ({today})"
+        underline = "-" * len(version_line)
 
-    run(
-        [
-            "sd",
-            "--flags",
-            "m",
-            "(=======\nHistory\n=======)",
-            f"$1\n\n{version_line}\n{underline}",
-            "HISTORY.rst",
-        ],
-    )
+        run(
+            [
+                "sd",
+                "--flags",
+                "m",
+                "(=======\nHistory\n=======)",
+                f"$1\n\n{version_line}\n{underline}",
+                "HISTORY.rst",
+            ],
+        )
 
-    run(["git", "add", "setup.cfg", "HISTORY.rst"])
+    files_to_add = ["setup.cfg"]
+    if not skip_history:
+        files_to_add.append("HISTORY.rst")
+    run(["git", "add", *files_to_add])
     run(["git", "commit", "--message", f"Version {version}"])
 
     run(["rm", "-rf", "build", "dist", *glob("src/*.egg-info")])
