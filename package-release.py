@@ -33,7 +33,17 @@ def main(argv=None) -> int:
         return 1
 
     run(["git", "diff", "--exit-code"])
-    run(["git", "checkout", "main"])
+    main_exists = (
+        subprocess.run(
+            ["git", "rev-parse", "--quiet", "--verify", "main"], capture_output=True
+        ).returncode
+        == 0
+    )
+    if main_exists:
+        default_branch = "main"
+    else:
+        default_branch = "master"
+    run(["git", "checkout", default_branch])
     run(["git", "pull"])
 
     config_parser = ConfigParser()
