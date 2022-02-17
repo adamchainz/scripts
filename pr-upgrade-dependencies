@@ -5,7 +5,7 @@ if [[ ! -d requirements ]]; then
     exit 1
 fi
 git diff --exit-code
-git checkout main
+git switch $(git-branch-main-or-master)
 git pull
 ./requirements/compile.py --upgrade
 git checkout -b upgrade_requirements
