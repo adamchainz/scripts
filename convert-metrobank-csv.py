@@ -4,7 +4,6 @@ Convert the Metrobank CSV to one ready for import into FreeAgent.
 """
 import argparse
 import csv
-import datetime as dt
 import sys
 from decimal import Decimal
 
@@ -28,15 +27,13 @@ def main(argv=None) -> int:
                 continue
 
             (
-                date_raw,
+                date,
                 reference,
                 transaction_type,
                 money_in,
                 money_out,
                 balance,
             ) = row
-
-            date = dt.datetime.strptime(date_raw, "%d %B %Y").strftime("%d/%m/%Y")
 
             if money_in == "":
                 money_in = "0"
