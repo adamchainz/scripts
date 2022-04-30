@@ -176,7 +176,7 @@ def main(argv=None) -> int:
     else:
         run(
             ["python", "-m", "build"],
-            env={**os.environ, "PIP_REQUIRE_VIRTUALENV": ""},
+            env={**os.environ, "PIP_REQUIRE_VIRTUALENV": "0"},
         )
 
     run(["twine", "check", *glob("dist/*")])
