@@ -119,7 +119,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     goaccess.stdin.close()
     goaccess.wait()
 
-    subprocess.run(["open", str((prefix_dir / "index.html").resolve())], check=True)
+    subprocess.run(
+        [
+            "open",
+            "-a",
+            "Firefox",
+            str((prefix_dir / "index.html").resolve()),
+        ],
+        check=True,
+    )
 
     return 0
 
