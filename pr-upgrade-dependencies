@@ -14,3 +14,4 @@ git commit -m 'Upgrade requirements'
 git push -u origin upgrade_requirements
 gh pr create --fill
 gh pr view --web
+sleep 10
