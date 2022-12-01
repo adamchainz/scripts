@@ -110,6 +110,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             "209.145.61.76",
             "--exclude-ip",
             "149.86.55.232",
+            "--exclude-ip",
+            "116.109.188.214",
             "--output",
             "index.html",
         ],
