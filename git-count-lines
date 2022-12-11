@@ -9,4 +9,4 @@ if [[ "$UNTIL" = "" ]]; then
     UNTIL="today"
 fi
 echo For $AUTHOR since $SINCE until $UNTIL:
-git log --since="$SINCE" --until="$UNTIL" --author="$AUTHOR" --pretty=tformat: --numstat -- . | gawk '{ add += $1 ; subs += $2 ; sum += $1 + $2; net += $1 - $2; } END { printf "Added lines: %s, Removed lines : %s, Total lines affected: %s, Net: %s\n",add,subs,sum,net }' -
+git log --since="$SINCE" --until="$UNTIL" --author="$AUTHOR" --pretty=tformat: --numstat -- . | awk '{ add += $1 ; subs += $2 ; sum += $1 + $2; net += $1 - $2; } END { printf "Added lines: %s, Removed lines : %s, Total lines affected: %s, Net: %s\n",add,subs,sum,net }' -
