@@ -21,11 +21,11 @@ def main(argv=None) -> int:
     )
     parser.add_argument("version")
     parser.add_argument("--sdist-only", action="store_true")
-    parser.add_argument("--skip-history", action="store_true")
+    parser.add_argument("--skip-changelog", action="store_true")
     args = parser.parse_args(argv)
     version = args.version
     sdist_only = args.sdist_only
-    skip_history = args.skip_history
+    skip_changelog = args.skip_changelog
 
     if os.environ.get("VIRTUAL_ENV"):
         print(
@@ -147,7 +147,7 @@ def main(argv=None) -> int:
         ["sd", "version = .*", f"version = {version}", "setup.cfg"],
     )
 
-    if not skip_history:
+    if not skip_changelog:
         today = dt.date.today().isoformat()
         version_line = f"{version} ({today})"
         underline = "-" * len(version_line)
@@ -157,15 +157,15 @@ def main(argv=None) -> int:
                 "sd",
                 "--flags",
                 "m",
-                "(=======\nHistory\n=======)",
+                "(=========\nChangelog\n=========)",
                 f"$1\n\n{version_line}\n{underline}",
-                "HISTORY.rst",
+                "CHANGELOG.rst",
             ],
         )
 
     files_to_add = ["setup.cfg"]
-    if not skip_history:
-        files_to_add.append("HISTORY.rst")
+    if not skip_changelog:
+        files_to_add.append("CHANGELOG.rst")
     run(["git", "add", *files_to_add])
     run(["git", "commit", "--message", f"Version {version}"])
 
