@@ -39,21 +39,20 @@ def main():
         destination_dir = get_date_dir(date_taken)
         print(blue("\tMoving to {}".format(destination_dir)))
 
-        destination_filename = os.path.join(destination_dir, os.path.basename(filename))
-        print("TODO: pngcrusher or jpegoptim")
-        raise SystemExit(1)
-        # os.rename(filename, destination_filename)
+        destination_filename = os.path.join(
+            destination_dir, os.path.basename(filename)
+        )
+        os.rename(filename, destination_filename)
 
-        if filename.lower().endswith((".jpg", ".jpeg")):
-            iphone_live_movie_filename = filename.rsplit(".", 1)[0] + ".mov"
-            if os.path.isfile(iphone_live_movie_filename):
-                print(blue("\tTrashing related iPhone live mov file"))
-                shutil.move(iphone_live_movie_filename, trash)
-
+        if filename.lower().endswith((".png")):
+            subprocess.run(["oxipng", destination_filename], check=True)
+        elif filename.lower().endswith((".jpg", ".jpeg")):
             iphone_aae_filename = filename.rsplit(".", 1)[0] + ".aae"
             if os.path.isfile(iphone_aae_filename):
                 print(blue("\tTrashing related iPhone photo edits AAE file"))
                 shutil.move(iphone_aae_filename, trash)
+
+            subprocess.run(["jpegoptim", destination_filename], check=True)
 
         time.sleep(1)
 
