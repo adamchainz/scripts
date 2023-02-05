@@ -6,19 +6,20 @@ import shutil
 import subprocess
 import time
 
-from termcolor import colored
-
 iphone_dir = os.path.expanduser("~/Arqbox/Aart/Photos/iPhone")
 photo_dir = os.path.expanduser("~/Arqbox/Aart/Photos")
 trash = os.path.expanduser("~/.Trash")
 
+esc_blue = "\x1b[38;2;0;0;200m"
+esc_red = "\x1b[38;2;200;0;0m"
+esc_reset = "\x1b[0m"
 
 def blue(string):
-    return colored(string, "blue")
+    return f"{esc_blue}{string}{esc_reset}"
 
 
 def red(string):
-    return colored(string, "red")
+    return f"{esc_red}{string}{esc_reset}"
 
 
 def main():
