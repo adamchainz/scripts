@@ -22,7 +22,7 @@ def red(string):
 
 
 def main():
-    thirty_days_ago = dt.date.today() - dt.timedelta(days=30)
+    recent = dt.date.today() - dt.timedelta(days=180)
     for filename in old_media():
         print(filename)
         date_taken = get_date_taken(filename)
@@ -30,8 +30,8 @@ def main():
             print(red("\t😓  Could not find date/time"))
             continue
 
-        if date_taken > thirty_days_ago:
-            print(blue("\tWas taken < 30 days ago, leaving"))
+        if date_taken >= recent:
+            print(blue("\tWas taken within recent window, leaving"))
             continue
 
         destination_dir = get_date_dir(date_taken)
