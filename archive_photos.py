@@ -63,7 +63,9 @@ FILE_EXTENSIONS = (".avi", ".jpg", ".jpeg", ".mov", ".mp4", ".png")
 
 def old_media():
     for filename in sorted(os.listdir(iphone_dir)):
-        if filename.lower().endswith(FILE_EXTENSIONS) and not os.path.islink(filename):
+        if filename.lower().endswith(FILE_EXTENSIONS) and not os.path.islink(
+            filename
+        ):
             full_filename = os.path.join(iphone_dir, filename)
             # mov files can be removed during the loop if they are iPhone live
             # photo movies
@@ -72,7 +74,9 @@ def old_media():
 
 
 def get_date_taken(filename):
-    output = subprocess.check_output(["exiftool", filename], universal_newlines=True)
+    output = subprocess.check_output(
+        ["exiftool", filename], universal_newlines=True
+    )
     lines = output.split("\n")
 
     exif_date_taken = get_exif_date_taken(filename, lines)
