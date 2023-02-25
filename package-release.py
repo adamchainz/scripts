@@ -152,6 +152,11 @@ def main(argv=None) -> int:
         version_line = f"{version} ({today})"
         underline = "-" * len(version_line)
 
+        if os.path.exists("docs/changelog.rst"):
+            changelog_path = "docs/changelog.rst"
+        else:
+            changelog_path = "CHANGELOG.rst"
+
         run(
             [
                 "sd",
@@ -159,13 +164,13 @@ def main(argv=None) -> int:
                 "m",
                 "(=========\nChangelog\n=========)",
                 f"$1\n\n{version_line}\n{underline}",
-                "CHANGELOG.rst",
+                changelog_path,
             ],
         )
 
     files_to_add = ["setup.cfg"]
     if not skip_changelog:
-        files_to_add.append("CHANGELOG.rst")
+        files_to_add.append(changelog_path)
     run(["git", "add", *files_to_add])
     run(["git", "commit", "--message", f"Version {version}"])
 
