@@ -4,9 +4,7 @@ import datetime as dt
 import functools
 import re
 import shutil
-import signal
 import subprocess
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 iphone_path = Path("~/Arqbox/Aart/Photos/iPhone").expanduser()
@@ -32,19 +30,8 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     actually_move = args.actually_move
 
-    try:
-        with ThreadPoolExecutor(max_workers=10) as executor:
-
-            def signal_handler(*args, **kwargs):
-                executor.shutdown(wait=True, cancel_futures=True)
-                raise KeyboardInterrupt()
-
-            signal.signal(signal.SIGINT, signal_handler)
-
-            for path in media():
-                executor.submit(process, path, actually_move)
-    except KeyboardInterrupt:
-        return 1
+    for path in media():
+        process(path, actually_move)
     return 0
 
 
@@ -61,9 +48,27 @@ def process(path, actually_move):
     dest_display = blue(destination_path.relative_to(photos_path).parent)
 
     if destination_path.exists():
-        out += red(f"destination {destination_path} exists!")
-        print(out)
-        return
+        optimize(path)
+        optimize(destination_path)
+        if path.read_bytes() == destination_path.read_bytes():
+            out += f"🗑️ duplicate, destination exists: {destination_path} "
+            if actually_move:
+                path.unlink()
+                print(out)
+                return
+        else:
+            if actually_move:
+                # Prefer the new version. Imports from iMazing come with edits made
+                # on the phone applied, whilst old imported versions with Image
+                # Capture do not.
+                out += f" 🗑️ duplicate, destination exists: {destination_path} "
+                shutil.move(destination_path, trash_path)
+            else:
+                out += red(
+                    f"❗️ destination exists with different contents: {destination_path}"
+                )
+                print(out)
+                return
 
     if not actually_move:
         out += f"would move to {dest_display}"
@@ -85,26 +90,16 @@ def process(path, actually_move):
             out += blue("🗑️ existing JPEG")
             shutil.move(jpeg_dest_path, trash_path)
 
-        if path.suffix.lower() == ".png":
-            subprocess.run(
-                ["oxipng", str(destination_path)], check=True, capture_output=True
-            )
-            out += "✔ "
-        elif path.suffix.lower() in (".jpg", ".jpeg"):
-            subprocess.run(
-                ["jpegoptim", str(destination_path)],
-                check=True,
-                capture_output=True,
-            )
-            out += "✔ "
+        if optimize(destination_path):
+            out += " ✓"
         print(out)
 
 
 FILE_EXTENSIONS = {
     ".avi",
     ".heic",
-    ".jpg",
     ".jpeg",
+    ".jpg",
     ".mov",
     ".mp4",
     ".png",
@@ -142,24 +137,24 @@ def get_date_taken(path):
         exif_field_names = ("Date/Time Original", "Create Date", "Date Created")
     exif_values = []
     for field in exif_field_names:
-        if field in values:
+        if values.get(field, None) not in (None, "0000:00:00 00:00:00"):
             exif_values.append(values[field])
     if exif_values:
-        return min(parse_datetime(v) for v in exif_values)
+        return min(parse_date(v) for v in exif_values)
 
-    modification = parse_datetime(values["File Modification Date/Time"])
-    if modification.date() < dt.date.today():
+    modification = parse_date(values["File Modification Date/Time"])
+    if modification < dt.date.today():
         return modification
 
     return None
 
 
 date_taken_re = re.compile(
-    r"(?P<year>\d{4}):(?P<month>\d{2}):(?P<day>\d{2}) \d{2}:\d{2}:\d{2}"
+    r"(?P<year>\d{4}):(?P<month>\d{2}):(?P<day>\d{2})( \d{2}:\d{2}:\d{2})?"
 )
 
 
-def parse_datetime(line):
+def parse_date(line):
     parsed = date_taken_re.search(line)
     parsed_types = {k: int(v) for k, v in parsed.groupdict().items()}
     return dt.date(**parsed_types)
@@ -180,6 +175,20 @@ def get_date_path(date):
     path = year_path / date_string
     path.mkdir()
     return path
+
+
+def optimize(path):
+    if path.suffix.lower() == ".png":
+        subprocess.run(["oxipng", str(path)], check=True, capture_output=True)
+        return True
+    elif path.suffix.lower() in (".jpg", ".jpeg"):
+        subprocess.run(
+            ["jpegoptim", str(path)],
+            check=True,
+            capture_output=True,
+        )
+        return True
+    return False
 
 
 if __name__ == "__main__":
