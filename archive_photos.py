@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 import argparse
 import datetime as dt
+import functools
 import re
 import shutil
+import signal
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 iphone_path = Path("~/Arqbox/Aart/Photos/iPhone").expanduser()
@@ -29,49 +32,83 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     actually_move = args.actually_move
 
-    # Keep recent photos in the iPhone directory
-    recent_cutoff = dt.date.today() - dt.timedelta(days=30)
+    try:
+        with ThreadPoolExecutor(max_workers=10) as executor:
 
-    for path in media():
-        print(blue(path.relative_to(iphone_path)), end=" ")
+            def signal_handler(*args, **kwargs):
+                executor.shutdown(wait=True, cancel_futures=True)
+                raise KeyboardInterrupt()
+
+            signal.signal(signal.SIGINT, signal_handler)
+
+            for path in media():
+                executor.submit(process, path, actually_move)
+    except KeyboardInterrupt:
+        return 1
+    return 0
+
+
+def process(path, actually_move):
+    out = blue(path.relative_to(iphone_path)) + " "
+
+    date_taken = get_date_taken(path)
+    if date_taken is None:
+        out += red("😓  Could not find date/time")
+        print(out)
+        return
+
+    destination_path = get_date_path(date_taken) / path.name
+    dest_display = blue(destination_path.relative_to(photos_path).parent)
+
+    if destination_path.exists():
+        out += red(f"destination {destination_path} exists!")
+        print(out)
+        return
+
+    if not actually_move:
+        out += f"would move to {dest_display}"
+        print(out)
+    else:
+        out += f"=> {dest_display}"
+        shutil.move(path, destination_path)
+
+        if path.suffix.lower() in (".jpg", ".jpeg"):
+            iphone_aae_path = path.with_suffix(".aae")
+            if iphone_aae_path.exists():
+                out += blue(" 🗑️ iPhone photo edits AAE file")
+                shutil.move(iphone_aae_path, trash_path)
+
+        if (
+            path.suffix.lower() == ".heic"
+            and (jpeg_dest_path := destination_path.with_suffix(".jpg")).exists()
+        ):
+            out += blue("🗑️ existing JPEG")
+            shutil.move(jpeg_dest_path, trash_path)
 
         if path.suffix.lower() == ".png":
             subprocess.run(
-                ["oxipng", str(path)], check=True, capture_output=True
+                ["oxipng", str(destination_path)], check=True, capture_output=True
             )
-            print("✔", end=" ")
+            out += "✔ "
         elif path.suffix.lower() in (".jpg", ".jpeg"):
             subprocess.run(
-                ["jpegoptim", str(path)], check=True, capture_output=True
+                ["jpegoptim", str(destination_path)],
+                check=True,
+                capture_output=True,
             )
-            print("✔", end=" ")
-
-        date_taken = get_date_taken(path)
-        if date_taken is None:
-            print(red("😓  Could not find date/time"))
-            continue
-        print("@", date_taken, end=" ")
-
-        if date_taken >= recent_cutoff:
-            print(blue("recent, leaving in place."))
-            continue
-
-        destination_path = get_date_path(date_taken) / path.name
-        dest_display = blue(destination_path.relative_to(photos_path).parent)
-        if not actually_move:
-            print("would move to", dest_display)
-
-        if actually_move:
-            print("->", dest_display)
-            shutil.move(path, destination_path)
-            if path.suffix.lower() in (".jpg", ".jpeg"):
-                iphone_aae_path = path.with_suffix(".aae")
-                if iphone_aae_path.exists():
-                    print(blue("\t🗑️ iPhone photo edits AAE file"))
-                    shutil.move(iphone_aae_path, trash_path)
+            out += "✔ "
+        print(out)
 
 
-FILE_EXTENSIONS = {".avi", ".jpg", ".jpeg", ".mov", ".mp4", ".png"}
+FILE_EXTENSIONS = {
+    ".avi",
+    ".heic",
+    ".jpg",
+    ".jpeg",
+    ".mov",
+    ".mp4",
+    ".png",
+}
 
 
 def media():
@@ -90,42 +127,31 @@ def get_date_taken(path):
     output = subprocess.run(
         ["exiftool", str(path)], capture_output=True, text=True, check=True
     ).stdout
-    lines = output.split("\n")
 
-    exif_date_taken = get_exif_date_taken(path, lines)
-    if exif_date_taken:
-        return exif_date_taken
+    values = {}
+    for line in output.split("\n"):
+        if ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        values[key.strip()] = value.strip()
 
-    file_date_taken = get_file_date_taken(lines)
-    if file_date_taken:
-        return file_date_taken
-
-    return None
-
-
-def get_exif_date_taken(path, lines):
+    # Exif date taken
     if path.suffix.lower() == ".mov":
         exif_field_names = ("Media Create Date", "File Modification Date/Time")
     else:
-        exif_field_names = ("Date/Time Original",)
+        exif_field_names = ("Date/Time Original", "Create Date", "Date Created")
+    exif_values = []
+    for field in exif_field_names:
+        if field in values:
+            exif_values.append(values[field])
+    if exif_values:
+        return min(parse_datetime(v) for v in exif_values)
 
-    lines = [line for line in lines if line.startswith(exif_field_names)]
-    if not lines:
-        return None
-    return min(extract_datetime(line) for line in lines)
+    modification = parse_datetime(values["File Modification Date/Time"])
+    if modification.date() < dt.date.today():
+        return modification
 
-
-def get_file_date_taken(lines):
-    lines = [line for line in lines if "File Modification Date/Time" in line]
-    if not lines:
-        return None
-    return extract_datetime(lines[0])
-
-
-def extract_datetime(line):
-    parsed = date_taken_re.search(line)
-    parsed_types = {k: int(v) for k, v in parsed.groupdict().items()}
-    return dt.date(**parsed_types)
+    return None
 
 
 date_taken_re = re.compile(
@@ -133,6 +159,13 @@ date_taken_re = re.compile(
 )
 
 
+def parse_datetime(line):
+    parsed = date_taken_re.search(line)
+    parsed_types = {k: int(v) for k, v in parsed.groupdict().items()}
+    return dt.date(**parsed_types)
+
+
+@functools.cache
 def get_date_path(date):
     year_path = photos_path / str(date.year)
     year_path.mkdir(parents=True, exist_ok=True)  # new year
