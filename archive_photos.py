@@ -145,6 +145,7 @@ def process(path, get_metadata, actually_move):
 
 FILE_EXTENSIONS = {
     ".avi",
+    ".gif",
     ".heic",
     ".jpeg",
     ".jpg",
