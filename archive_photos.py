@@ -2,9 +2,11 @@
 import argparse
 import datetime as dt
 import functools
+import json
 import re
 import shutil
 import subprocess
+from contextlib import contextmanager
 from pathlib import Path
 
 iphone_path = Path("~/Arqbox/Aart/Photos/iPhone").expanduser()
@@ -30,15 +32,61 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     actually_move = args.actually_move
 
-    for path in media():
-        process(path, actually_move)
+    with run_exiftool() as get_metadata:
+        for path in media():
+            process(path, get_metadata, actually_move)
     return 0
 
 
-def process(path, actually_move):
+@contextmanager
+def run_exiftool():
+    process = subprocess.Popen(
+        [
+            "exiftool",
+            # Keep running and replying to new args
+            "-stay_open",
+            "True",
+            # Read args from stdin
+            "-@",
+            "-",
+        ],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    # Ensure it’s running
+    process.poll()
+
+    def get_metadata(path):
+        process.stdin.write(
+            "\n".join(
+                [
+                    "-j",  # JSON
+                    str(path),
+                    "-execute",
+                    "",
+                ]
+            ).encode()
+        )
+        process.stdin.flush()
+        lines = []
+        while True:
+            line = next(process.stdout)
+            if line == b"{ready}\n":
+                break
+            else:
+                lines.append(line)
+        return json.loads(b"".join(lines))[0]
+
+    yield get_metadata
+
+    process.kill()
+
+
+def process(path, get_metadata, actually_move):
     out = blue(path.relative_to(iphone_path)) + " "
 
-    date_taken = get_date_taken(path)
+    date_taken = get_date_taken(path, get_metadata)
     if date_taken is None:
         out += red("😓  Could not find date/time")
         print(out)
@@ -118,31 +166,26 @@ def media():
             yield path
 
 
-def get_date_taken(path):
-    output = subprocess.run(
-        ["exiftool", str(path)], capture_output=True, text=True, check=True
-    ).stdout
-
-    values = {}
-    for line in output.split("\n"):
-        if ":" not in line:
-            continue
-        key, value = line.split(":", 1)
-        values[key.strip()] = value.strip()
+def get_date_taken(path, get_metadata):
+    metadata = get_metadata(path)
 
     # Exif date taken
     if path.suffix.lower() == ".mov":
-        exif_field_names = ("Media Create Date", "File Modification Date/Time")
+        field_names = ("MediaCreateDate", "FileModifyDate")
     else:
-        exif_field_names = ("Date/Time Original", "Create Date", "Date Created")
-    exif_values = []
-    for field in exif_field_names:
-        if values.get(field, None) not in (None, "0000:00:00 00:00:00"):
-            exif_values.append(values[field])
-    if exif_values:
-        return min(parse_date(v) for v in exif_values)
+        field_names = (
+            "DateTimeOriginal",
+            "CreateDate",
+            "DateCreated",
+        )
+    values = []
+    for name in field_names:
+        if metadata.get(name, None) not in (None, "0000:00:00 00:00:00"):
+            values.append(metadata[name])
+    if values:
+        return min(parse_date(v) for v in values)
 
-    modification = parse_date(values["File Modification Date/Time"])
+    modification = parse_date(metadata["FileModifyDate"])
     if modification < dt.date.today():
         return modification
 
