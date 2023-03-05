@@ -183,7 +183,7 @@ def optimize(path):
         return True
     elif path.suffix.lower() in (".jpg", ".jpeg"):
         subprocess.run(
-            ["jpegoptim", str(path)],
+            ["jpegoptim", "--preserve", "--preserve-perms", str(path)],
             check=True,
             capture_output=True,
         )
