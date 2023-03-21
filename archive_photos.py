@@ -187,7 +187,7 @@ def get_date_taken(path, get_metadata):
         return min(parse_date(v) for v in values)
 
     modification = parse_date(metadata["FileModifyDate"])
-    if modification < dt.date.today():
+    if modification <= dt.date.today():
         return modification
 
     return None
