@@ -127,4 +127,4 @@ git switch -c python_3.12
 git commit -m "Support Python 3.12"
 
 echo "Check below search results for more to change..."
-rg --pretty '3\b.*\b(11|12)\b'
+rg --pretty --iglob '!requirements/*' --iglob '!CHANGELOG.rst' --iglob '!setup.cfg' '3\b.*\b(11|12)\b'
