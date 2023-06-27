@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Fix a merge conflict in poetry.lock when two branches have modified the
+# content-hash line, like:
+#
+# <<<<<<< HEAD
+# content-hash = "c54e2332d8aefc9668b600773822712c9871c63b8cbb5f1b484da004f34cfe85"
+# ||||||| parent of df6bb5063 (spam)
+# content-hash = "4a35f7903c4ec8bcd6cc8c79fdf99853be7aac1c22e5aa653084813e19858534"
+# =======
+# content-hash = "2f68d62bca0ebc560040de02daccdf4e9d074e249815bb82095d9f94a714c6f6"
+# >>>>>>> df6bb5063 (ham)
+
+set -euo pipefail
+
+# shellcheck disable=SC2016
+sd '^<<<<<<<.*\n(content-hash = .*\n)(\|\|\|\|\|\|\| parent of.*\ncontent-hash.*\n)?=======.*\ncontent-hash = .*\n.*>>>>>>>.*\n' '$1' poetry.lock
+
+poetry lock --no-update
