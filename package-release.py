@@ -191,7 +191,9 @@ def main(argv=None) -> int:
     run(["twine", "upload", *glob("dist/*")])
 
     run(["git", "push", "origin", default_branch])
-    run(["git", "tag", "--annotate", version])
+    run(
+        ["git", "tag", "--annotate", version, "--message", f"Version {version}"]
+    )
     run(["git", "push", "--tags", "origin", version])
 
 
