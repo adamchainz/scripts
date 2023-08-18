@@ -37,7 +37,8 @@ def main(argv=None) -> int:
     run(["git", "diff", "--exit-code"])
     main_exists = (
         subprocess.run(
-            ["git", "rev-parse", "--quiet", "--verify", "main"], capture_output=True
+            ["git", "rev-parse", "--quiet", "--verify", "main"],
+            capture_output=True,
         ).returncode
         == 0
     )
@@ -122,7 +123,9 @@ def main(argv=None) -> int:
             text=True,
         ).stdout
     )
-    check_suites = checks_data["data"]["repository"]["object"]["checkSuites"]["nodes"]
+    check_suites = checks_data["data"]["repository"]["object"]["checkSuites"][
+        "nodes"
+    ]
     check_suites = [
         s
         for s in check_suites
