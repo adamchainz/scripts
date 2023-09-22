@@ -23,13 +23,7 @@ Changelog
 * Support Django 5.0." CHANGELOG.rst
 
 # shellcheck disable=SC2016
-sd 'Django (.*?) to 4.2 supported.' 'Django $1 to 5.0 supported.' README.rst
-
-if [ -f docs/installation.rst ]; then
-  # shellcheck disable=SC2016
-  sd 'Django (.*?) to 4.2 supported.' 'Django $1 to 5.0 supported.' docs/installation.rst
-  git add docs/installation.rst
-fi
+git ls-files -z '*.rst' | xargs -0 sd 'Django (.*?) to 4.2 supported.' 'Django $1 to 5.0 supported.'
 
 # shellcheck disable=SC2016
 sd -s 'py312-django{42}' 'py312-django{50, 42}' tox.ini
