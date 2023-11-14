@@ -5,9 +5,10 @@ import json
 import os
 import subprocess
 import sys
-from configparser import ConfigParser
+import tomllib
 from functools import partial
 from glob import glob
+from pathlib import Path
 from textwrap import dedent
 
 from packaging.version import Version
@@ -49,9 +50,8 @@ def main(argv=None) -> int:
     run(["git", "checkout", default_branch])
     run(["git", "pull"])
 
-    config_parser = ConfigParser()
-    config_parser.read(["setup.cfg"])
-    current_version = Version(config_parser.get("metadata", "version"))
+    with Path("pyproject.toml").open("rb") as fp:
+        current_version = Version(tomllib.load(fp)["project"]["version"])
 
     if version == "major":
         version = f"{current_version.major + 1}.0.0"
@@ -147,7 +147,7 @@ def main(argv=None) -> int:
         return 1
 
     run(
-        ["sd", "version = .*", f"version = {version}", "setup.cfg"],
+        ["sd", 'version = ".*"', f'version = "{version}"', "pyproject.toml"],
     )
 
     if not skip_changelog:
