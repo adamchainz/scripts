@@ -123,9 +123,7 @@ def main(argv=None) -> int:
             text=True,
         ).stdout
     )
-    check_suites = checks_data["data"]["repository"]["object"]["checkSuites"][
-        "nodes"
-    ]
+    check_suites = checks_data["data"]["repository"]["object"]["checkSuites"]["nodes"]
     check_suites = [
         s
         for s in check_suites
@@ -171,7 +169,7 @@ def main(argv=None) -> int:
             ],
         )
 
-    files_to_add = ["setup.cfg"]
+    files_to_add = ["pyproject.toml"]
     if not skip_changelog:
         files_to_add.append(changelog_path)
     run(["git", "add", *files_to_add])
@@ -191,9 +189,7 @@ def main(argv=None) -> int:
     run(["twine", "upload", *glob("dist/*")])
 
     run(["git", "push", "origin", default_branch])
-    run(
-        ["git", "tag", "--annotate", version, "--message", f"Version {version}"]
-    )
+    run(["git", "tag", "--annotate", version, "--message", f"Version {version}"])
     run(["git", "push", "--tags", "origin", version])
 
 
