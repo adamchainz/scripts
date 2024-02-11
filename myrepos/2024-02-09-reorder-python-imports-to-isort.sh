@@ -22,17 +22,18 @@ add_imports = [
 force_single_line = true
 profile = "black"' >> pyproject.toml
 
+if [ -d example ]; then
+    echo 'src_paths = [
+    ".",
+    "example",
+    "src",
+]' >> pyproject.toml
+fi
+
 # reformat
 pre-commit run pyproject-fmt --file pyproject.toml || true
 pre-commit run isort -a || true
+pre-commit run -a
 
-git switch -c isort
-git commit -am "Use isort to sort imports
-
-Switching because reorder-python-imports is incompatible with Black 24: https://github.com/asottile/reorder-python-imports/issues/366  / https://github.com/psf/black/issues/4175 ."
-
+git commit -am "Use isort to sort imports"
 git push
-gh pr create --fill
-sleep 1  # github sometimes slow
-gh pr view --web
-
