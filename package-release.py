@@ -181,7 +181,7 @@ def main(argv=None) -> int:
         run(["python", "setup.py", "clean", "sdist"])
     else:
         run(
-            ["python", "-m", "build"],
+            ["python", "-m", "build", "--installer", "uv"],
             env={**os.environ, "PIP_REQUIRE_VIRTUALENV": "0"},
         )
 
