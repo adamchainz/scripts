@@ -1,15 +1,15 @@
 #!/bin/zsh
 set -ex
-if [[ ! -d requirements ]]; then
-    echo "Need requirements/"
+if [[ ! -d tests/requirements ]]; then
+    echo "Need tests/requirements/"
     exit 1
 fi
 git diff --exit-code
 git switch $(if git rev-parse --quiet --verify main >/dev/null; then echo -n main; else; echo -n master; fi)
 git pull
-./requirements/compile.py --upgrade
+./tests/requirements/compile.py --upgrade
 git switch -c upgrade_requirements
-git commit -m 'Upgrade requirements' -- ./requirements
+git commit -m 'Upgrade requirements' -- ./tests/requirements
 git push
 gh pr create --fill
 gh pr view --web
