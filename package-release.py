@@ -50,6 +50,15 @@ def main(argv=None) -> int:
     run(["git", "checkout", default_branch])
     run(["git", "pull"])
 
+    proc = run(["git", "tag", "--contains", "HEAD"], capture_output=True)
+    tag = proc.stdout.decode().strip()
+    if tag != '':
+        print(
+            f"❌ Current commit already tagged {tag!r}",
+            file=sys.stderr,
+        )
+        return 1
+
     with Path("pyproject.toml").open("rb") as fp:
         current_version = Version(tomllib.load(fp)["project"]["version"])
 
