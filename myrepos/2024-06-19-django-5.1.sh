@@ -60,14 +60,14 @@ sd \
         ],
         input=b"Django>=5.1a1,<5.2$2",
     )' \
-requirements/compile.py
+tests/requirements/compile.py
 
 done
 
-requirements/compile.py
+tests/requirements/compile.py
 
 git add --update
-git add requirements
+git add tests/requirements
 git switch -c django_5.1
 git commit -m "Support Django 5.1"
 
