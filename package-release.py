@@ -186,13 +186,10 @@ def main(argv=None) -> int:
 
     run(["rm", "-rf", "build", "dist", *glob("src/*.egg-info")])
 
+    build_command = ["python", "-m", "build", "--installer", "uv"]
     if sdist_only:
-        run(["python", "setup.py", "clean", "sdist"])
-    else:
-        run(
-            ["python", "-m", "build", "--installer", "uv"],
-            env={**os.environ, "PIP_REQUIRE_VIRTUALENV": "0"},
-        )
+        build_command.append("--sdist")
+    run(build_command, env={**os.environ, "PIP_REQUIRE_VIRTUALENV": "0"})
 
     run(["twine", "check", *glob("dist/*")])
     run(["twine", "upload", *glob("dist/*")])
