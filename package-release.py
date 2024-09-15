@@ -52,7 +52,7 @@ def main(argv=None) -> int:
 
     proc = run(["git", "tag", "--contains", "HEAD"], capture_output=True)
     tag = proc.stdout.decode().strip()
-    if tag != '':
+    if tag != "":
         print(
             f"❌ Current commit already tagged {tag!r}",
             file=sys.stderr,
