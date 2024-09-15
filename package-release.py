@@ -186,7 +186,7 @@ def main(argv=None) -> int:
 
     run(["rm", "-rf", "build", "dist", *glob("src/*.egg-info")])
 
-    build_command = ["python", "-m", "build", "--installer", "uv"]
+    build_command = ["pyproject-build", "--installer", "uv"]
     if sdist_only:
         build_command.append("--sdist")
     run(build_command, env={**os.environ, "PIP_REQUIRE_VIRTUALENV": "0"})
