@@ -1,4 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env uv run
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "packaging",
+# ]
+# ///
 import argparse
 import datetime as dt
 import json
