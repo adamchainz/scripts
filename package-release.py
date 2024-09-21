@@ -159,8 +159,15 @@ def main(argv=None) -> int:
         return 1
 
     run(
-        ["sd", 'version = ".*"', f'version = "{version}"', "pyproject.toml"],
+        ["sd", '^version = ".*"$', f'version = "{version}"', "pyproject.toml"],
     )
+    if Path("Cargo.toml").exists():
+        run(
+            ["sd", '^version = ".*"$', f'version = "{version}"', "Cargo.toml"],
+        )
+        run(
+            ["sd", '^version = ".*"$', f'version = "{version}"', "Cargo.lock"],
+        )
 
     if not skip_changelog:
         today = dt.date.today().isoformat()
@@ -186,6 +193,8 @@ def main(argv=None) -> int:
     files_to_add = ["pyproject.toml"]
     if not skip_changelog:
         files_to_add.append(changelog_path)
+    if Path("Cargo.toml").exists():
+        files_to_add.extend(["Cargo.toml", "Cargo.lock"])
     run(["git", "add", *files_to_add])
     run(["git", "commit", "--message", f"Version {version}"])
 
