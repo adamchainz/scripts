@@ -34,13 +34,6 @@ def main(argv=None) -> int:
     sdist_only = args.sdist_only
     skip_changelog = args.skip_changelog
 
-    if os.environ.get("VIRTUAL_ENV"):
-        print(
-            "❌ Use system Python not a virtual environment",
-            file=sys.stderr,
-        )
-        return 1
-
     run(["git", "diff", "--exit-code"])
     main_exists = (
         subprocess.run(
@@ -53,8 +46,14 @@ def main(argv=None) -> int:
         default_branch = "main"
     else:
         default_branch = "master"
-    run(["git", "checkout", default_branch])
+    run(["git", "switch", default_branch])
     run(["git", "pull"])
+
+    # check for unpushed commits
+    proc = run(["git", "rev-list", "HEAD...@{u}", "--count"], capture_output=True)
+    if proc.stdout.decode().strip() != "0":
+        print("❌ Unpushed commits", file=sys.stderr)
+        return 1
 
     proc = run(["git", "tag", "--contains", "HEAD"], capture_output=True)
     tag = proc.stdout.decode().strip()
