@@ -198,15 +198,17 @@ def main(argv=None) -> int:
     run(["git", "add", *files_to_add])
     run(["git", "commit", "--message", f"Version {version}"])
 
-    run(["rm", "-rf", "build", "dist", *glob("src/*.egg-info")])
+    if "release:" not in Path(".github/workflows/main.yml").read_text():
+        # Local build
+        run(["rm", "-rf", "build", "dist", *glob("src/*.egg-info")])
 
-    build_command = ["pyproject-build", "--installer", "uv"]
-    if sdist_only:
-        build_command.append("--sdist")
-    run(build_command, env={**os.environ, "PIP_REQUIRE_VIRTUALENV": "0"})
+        build_command = ["pyproject-build", "--installer", "uv"]
+        if sdist_only:
+            build_command.append("--sdist")
+        run(build_command, env={**os.environ, "PIP_REQUIRE_VIRTUALENV": "0"})
 
-    run(["twine", "check", *glob("dist/*")])
-    run(["twine", "upload", *glob("dist/*")])
+        run(["twine", "check", *glob("dist/*")])
+        run(["twine", "upload", *glob("dist/*")])
 
     run(["git", "push", "origin", default_branch])
     run(["git", "tag", "--annotate", version, "--message", f"Version {version}"])
