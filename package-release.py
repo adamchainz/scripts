@@ -26,11 +26,11 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
         description="Perform a release for the current Python package."
     )
-    parser.add_argument("version")
+    parser.add_argument("change", choices=["major", "minor", "patch"])
     parser.add_argument("--sdist-only", action="store_true")
     parser.add_argument("--skip-changelog", action="store_true")
     args = parser.parse_args(argv)
-    version = args.version
+    change = args.change
     sdist_only = args.sdist_only
     skip_changelog = args.skip_changelog
 
@@ -67,19 +67,13 @@ def main(argv=None) -> int:
     with Path("pyproject.toml").open("rb") as fp:
         current_version = Version(tomllib.load(fp)["project"]["version"])
 
-    if version == "major":
+    if change == "major":
         version = f"{current_version.major + 1}.0.0"
-    elif version == "minor":
+    elif change == "minor":
         version = f"{current_version.major}.{current_version.minor + 1}.0"
-    elif version == "patch":
+    else:
+        assert change == "patch"
         version = f"{current_version.major}.{current_version.minor}.{current_version.micro + 1}"
-
-    if Version(version) <= current_version:
-        print(
-            f"❌ Given version {version} < current version {current_version}",
-            file=sys.stderr,
-        )
-        return 1
 
     # Check GitHub Actions are all successful for the current commit
     # May be replaceable in future with gh cli builtin:
