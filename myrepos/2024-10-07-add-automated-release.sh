@@ -1,6 +1,10 @@
 #!/bin/zsh
 set -eu
 
+git diff --exit-code
+git checkout main
+git pull
+
 # Create or update the release environment
 gh api --method PUT '/repos/{owner}/{repo}/environments/release'
 
