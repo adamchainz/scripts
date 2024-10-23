@@ -187,7 +187,6 @@ def main(argv=None) -> int:
         changelog_lines.insert(4, version_line)
 
         changelog_path.write_text("\n".join(changelog_lines) + "\n")
-        return 1
 
     files_to_add = ["pyproject.toml"]
     if not skip_changelog:
