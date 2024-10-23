@@ -159,9 +159,7 @@ def main(argv=None) -> int:
         run(
             ["sd", '^version = ".*"$', f'version = "{version}"', "Cargo.toml"],
         )
-        run(
-            ["sd", '^version = ".*"$', f'version = "{version}"', "Cargo.lock"],
-        )
+        run(["cargo", "check"])
 
     if not skip_changelog:
         today = dt.date.today().isoformat()
