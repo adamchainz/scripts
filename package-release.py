@@ -162,25 +162,32 @@ def main(argv=None) -> int:
         run(["cargo", "check"])
 
     if not skip_changelog:
+        changelog_path = Path("docs/changelog.rst")
+        if not changelog_path.exists():
+            changelog_path = Path("CHANGELOG.rst")
+
+        changelog_contents = changelog_path.read_text()
+        changelog_lines = changelog_contents.splitlines()
+        assert changelog_lines[0] == "========="
+        assert changelog_lines[1] == "Changelog"
+        assert changelog_lines[2] == "========="
+        assert changelog_lines[3] == ""
+        if changelog_lines[4] == "Unreleased":
+            assert changelog_lines[5] == "----------"
+            assert changelog_lines[6] == ""
+            del changelog_lines[4:7]
+
+        assert changelog_lines[4].startswith("* ")
+
         today = dt.date.today().isoformat()
         version_line = f"{version} ({today})"
         underline = "-" * len(version_line)
+        changelog_lines.insert(4, "")
+        changelog_lines.insert(4, underline)
+        changelog_lines.insert(4, version_line)
 
-        if os.path.exists("docs/changelog.rst"):
-            changelog_path = "docs/changelog.rst"
-        else:
-            changelog_path = "CHANGELOG.rst"
-
-        run(
-            [
-                "sd",
-                "--flags",
-                "m",
-                "(=========\nChangelog\n=========)",
-                f"$1\n\n{version_line}\n{underline}",
-                changelog_path,
-            ],
-        )
+        changelog_path.write_text("\n".join(changelog_lines) + "\n")
+        return 1
 
     files_to_add = ["pyproject.toml"]
     if not skip_changelog:
