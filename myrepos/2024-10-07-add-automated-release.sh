@@ -17,10 +17,6 @@ open "https://pypi.org/manage/project/$project/settings/publishing/"
 echo "Press enter to continue"
 read -r
 
-# git diff --exit-code
-# git checkout main
-# git pull
-
 # Add to GitHub Actions workflow
 sd '    - main' $'    - main
     tags:
@@ -48,8 +44,26 @@ if rg -q 'coverage:' .github/workflows/main.yml; then
 
       - uses: pypa/gh-action-pypi-publish@release/v1' >> .github/workflows/main.yml
 else
-    echo TODO
-    exit 1
+    echo $'
+  release:
+    needs: [tests]
+    if: success() && startsWith(github.ref, \'refs/tags/\')
+    runs-on: ubuntu-24.04
+    environment: release
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+
+      - name: Build
+        run: uv build
+
+      - uses: pypa/gh-action-pypi-publish@release/v1' >> .github/workflows/main.yml
 fi
 
 git switch -c auto_release
