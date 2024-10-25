@@ -49,14 +49,26 @@ def main(argv=None) -> int:
     run(["git", "switch", default_branch])
     run(["git", "pull"])
 
+    # check that we are in the root of the repository
+    proc = run(
+        ["git", "rev-parse", "--path-format=relative", "--show-toplevel"],
+        capture_output=True,
+        text=True,
+    )
+    if proc.stdout.strip() != "./":
+        print("❌ Not in the root of the repository", file=sys.stderr)
+        return 1
+
     # check for unpushed commits
-    proc = run(["git", "rev-list", "HEAD...@{u}", "--count"], capture_output=True)
-    if proc.stdout.decode().strip() != "0":
+    proc = run(
+        ["git", "rev-list", "HEAD...@{u}", "--count"], capture_output=True, text=True
+    )
+    if proc.stdout.strip() != "0":
         print("❌ Unpushed commits", file=sys.stderr)
         return 1
 
-    proc = run(["git", "tag", "--contains", "HEAD"], capture_output=True)
-    tag = proc.stdout.decode().strip()
+    proc = run(["git", "tag", "--contains", "HEAD"], capture_output=True, text=True)
+    tag = proc.stdout.strip()
     if tag != "":
         print(
             f"❌ Current commit already tagged {tag!r}",
