@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+import subprocess
+import sys
+import tomllib
+import webbrowser
+
+# run git rev-parse --path-format=relative --show-toplevel
+proc = subprocess.run(
+    ["git", "rev-parse", "--path-format=relative", "--show-toplevel"],
+    capture_output=True,
+    text=True,
+)
+if proc.returncode != 0:
+    print(proc.stdout)
+    print(proc.stderr, file=sys.stderr)
+    sys.exit(proc.returncode)
+
+root = proc.stdout.strip()
+
+with open(f"{root}/pyproject.toml", "rb") as f:
+    data = tomllib.load(f)
+
+name = data["project"]["name"]
+webbrowser.open(f"https://pypi.org/project/{name}")
