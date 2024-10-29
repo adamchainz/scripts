@@ -83,12 +83,12 @@ $'- repo: https://github.com/adamchainz/django-upgrade
     args: [--target-version, \'4.2\']' \
 .pre-commit-config.yaml
 
-pre-commit run django-upgrade -a
+pre-commit run django-upgrade -a || :
 
 # Commit
 
 git switch -c drop_old_django_versions
-git commit -a -m "Drop Django 3.2 to 4.1 support
+git commit -a -n -m "Drop Django 3.2 to 4.1 support
 
 These versions are all EOL since April."
 
