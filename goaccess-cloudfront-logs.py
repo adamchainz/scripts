@@ -1,4 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env uv run
+# /// script
+# dependencies = [
+#   "boto3",
+# ]
+# ///
 from __future__ import annotations
 
 import argparse
@@ -58,7 +63,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             str(dest),
         )
 
-    with ThreadPoolExecutor(max_workers=16) as executor:
+    with ThreadPoolExecutor(max_workers=64) as executor:
         for date in dates:
             if date != today.isoformat():
                 try:
