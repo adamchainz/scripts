@@ -1,2 +1,0 @@
-#!/bin/bash
-find . -iname "$1" -exec grep -H -n -Z -I -i --color=always "$2" {}  \; 2>/dev/null

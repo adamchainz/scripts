@@ -1,3 +1,0 @@
-#!/bin/bash
-# e.g. size_of_all "*.png"
-find . -iname "$1" -exec ls -al {} + | awk '{sum = sum + $5} END {print sum}'

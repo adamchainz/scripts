@@ -1,5 +1,0 @@
-#!/bin/zsh
-set -e
-egrep -lR --null '\.(readthedocs|rtfd)\.(org|io)' . | xargs -0 -L 1 perl -pi -e 's~http(s)?://([^.]+)(?<!media)\.(readthedocs|rtfd)\.(io|org)~https://\2.readthedocs.io~g'
-egrep -lR --null '//readthedocs\.org/docs/' . | xargs -0 -L 1 perl -pi -e 's~http(s)?://readthedocs\.org/docs/([-_a-zA-Z0-9]+)(?<!media)~https://\2.readthedocs.io~g'
-git status

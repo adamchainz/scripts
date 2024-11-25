@@ -1,2 +1,0 @@
-#!/bin/sh
-sqlite3 /Volumes/Kindle/system/vocabulary/vocab.db "SELECT stem FROM WORDS" | sort
