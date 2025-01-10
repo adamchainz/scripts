@@ -40,8 +40,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     prefix_dir.mkdir(parents=True, exist_ok=True)
     os.chdir(prefix_dir)
 
-    print("Removing logs > 180 days old", end="", flush=True)
-    cutoff = today - dt.timedelta(days=180)
+    print("Removing logs > 365 days old", end="", flush=True)
+    cutoff = today - dt.timedelta(days=365)
     for path in prefix_dir.glob(f"{PREFIX}.*"):
         date = path.parts[-1][len(PREFIX) + 1 :][:10]
         if dt.date.fromisoformat(date) < cutoff:
