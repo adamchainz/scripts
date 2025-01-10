@@ -95,6 +95,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             "no",
             "--ignore-crawlers",
             "--static-file",
+            ".webp",
+            "--static-file",
             ".xml",
             # bad IP’s
             "--exclude-ip",
