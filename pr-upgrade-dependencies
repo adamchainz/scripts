@@ -13,4 +13,4 @@ git commit -m 'Upgrade requirements' -- ./tests/requirements
 git push
 gh pr create --fill
 gh pr view --web
-sleep 10
+sleep 20
