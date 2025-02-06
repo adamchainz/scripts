@@ -148,10 +148,18 @@ def main(argv=None) -> int:
         s
         for s in check_suites
         if (
+            # Ignored apps: Travis CI and AppVeyor show up in pytest org where
+            # other repos use them, but I don't.
             s["app"] is not None
-            # Ignored apps: I don't use Dependabot, and Travis CI and AppVeyor
-            # show up in pytest org where other repos use them, but I don't
-            and s["app"]["name"] not in ("Dependabot", "Travis CI", "AppVeyor")
+            and s["app"]["name"] not in ("Travis CI", "AppVeyor")
+        )
+        and not (
+            # Dependabot allowed to fail, sometimes it’s broken, and all it
+            # does is make PRs
+            s["app"] is not None
+            and s["app"]["name"] == "GitHub Actions"
+            and len(s["checkRuns"]["nodes"]) == 1
+            and s["checkRuns"]["nodes"][0]["name"] == "Dependabot"
         )
     ]
     if not all(s["conclusion"] == "SUCCESS" for s in check_suites):
