@@ -1,15 +1,43 @@
 #!/bin/zsh
 set -ex
-if [[ ! -d tests/requirements ]]; then
-    echo "Need tests/requirements/"
-    exit 1
+
+if ! git diff --exit-code --no-patch; then
+  echo "Uncommitted changes."
+  exit 1
 fi
-git diff --exit-code
+
 git switch $(if git rev-parse --quiet --verify main >/dev/null; then echo -n main; else; echo -n master; fi)
 git pull
-./tests/requirements/compile.py --upgrade
-git switch -c upgrade_requirements
-git commit -m 'Upgrade requirements' -- ./tests/requirements
+
+if git rev-parse --quiet --verify upgrade_dependencies; then
+  echo "Branch upgrade_dependencies already exists."
+  exit
+fi
+
+# Upgrade Python dependencies
+if [[ -f uv.lock ]]; then
+  uv lock --upgrade
+fi
+
+# Upgrade Rust dependencies
+if [[ -f cargo.lock ]]; then
+  cargo update
+fi
+
+# Upgrade GitHub Actions actions
+# Suspended due hitting rate limits: https://github.com/davidism/gha-update/issues/12
+# if [[ -d .github/workflows ]]; then
+#   uvx gha-update
+# fi
+
+if git diff --exit-code --no-patch; then
+  echo "No changes."
+  exit
+fi
+
+git switch -c upgrade_dependencies
+git commit -m 'Upgrade dependencies' -a
+
 git push
 gh pr create --fill
 gh pr view --web
