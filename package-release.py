@@ -175,6 +175,8 @@ def main(argv=None) -> int:
     run(
         ["sd", '^version = ".*"$', f'version = "{version}"', "pyproject.toml"],
     )
+    if Path("uv.lock").exists():
+        run(["uv", "lock"])
     if Path("Cargo.toml").exists():
         run(
             ["sd", '^version = ".*"$', f'version = "{version}"', "Cargo.toml"],
@@ -211,6 +213,8 @@ def main(argv=None) -> int:
     files_to_add = ["pyproject.toml"]
     if not skip_changelog:
         files_to_add.append(changelog_path)
+    if Path("uv.lock").exists():
+        files_to_add.append("uv.lock")
     if Path("Cargo.toml").exists():
         files_to_add.extend(["Cargo.toml", "Cargo.lock"])
     run(["git", "add", *files_to_add])
