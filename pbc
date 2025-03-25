@@ -1,6 +1,0 @@
-#!/bin/sh
-if [[ $# > 0 ]]; then
-    /bin/echo -n $* | pbcopy
-else
-    pbcopy < /dev/stdin
-fi
