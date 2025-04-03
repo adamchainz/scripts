@@ -76,8 +76,18 @@ def main(argv=None) -> int:
         )
         return 1
 
-    with Path("pyproject.toml").open("rb") as fp:
-        current_version = Version(tomllib.load(fp)["project"]["version"])
+    if Path("pyproject.toml").exists():
+
+        with Path("pyproject.toml").open("rb") as fp:
+            current_version = Version(tomllib.load(fp)["project"]["version"])
+
+    elif Path("Cargo.toml").exists():
+        with Path("Cargo.toml").open("rb") as fp:
+            current_version = Version(tomllib.load(fp)["package"]["version"])
+
+    else:
+        print("❌ No pyproject.toml or Cargo.toml found", file=sys.stderr)
+        return 1
 
     if change == "major":
         version = f"{current_version.major + 1}.0.0"
@@ -172,9 +182,10 @@ def main(argv=None) -> int:
                 )
         return 1
 
-    run(
-        ["sd", '^version = ".*"$', f'version = "{version}"', "pyproject.toml"],
-    )
+    if Path("pyproject.toml").exists():
+        run(
+            ["sd", '^version = ".*"$', f'version = "{version}"', "pyproject.toml"],
+        )
     if Path("uv.lock").exists():
         run(["uv", "lock"])
     if Path("Cargo.toml").exists():
@@ -210,18 +221,21 @@ def main(argv=None) -> int:
 
         changelog_path.write_text("\n".join(changelog_lines) + "\n")
 
-    files_to_add = ["pyproject.toml"]
-    if not skip_changelog:
-        files_to_add.append(changelog_path)
-    if Path("uv.lock").exists():
-        files_to_add.append("uv.lock")
+    files_to_add = []
+    if Path("pyproject.toml").exists():
+        files_to_add.append("pyproject.toml")
     if Path("Cargo.toml").exists():
         files_to_add.extend(["Cargo.toml", "Cargo.lock"])
-    run(["git", "add", *files_to_add])
-    run(["git", "commit", "--message", f"Version {version}"])
+    if Path("uv.lock").exists():
+        files_to_add.append("uv.lock")
+    if not skip_changelog:
+        files_to_add.append(changelog_path)
+    run(["git", "commit", "--message", f"Version {version}", "--", *files_to_add])
 
     if "release:" not in Path(".github/workflows/main.yml").read_text():
         # Local build
+        assert Path("pyproject.toml").exists()
+
         run(["rm", "-rf", "build", "dist", *glob("src/*.egg-info")])
 
         build_command = ["pyproject-build", "--installer", "uv"]
