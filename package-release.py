@@ -1,6 +1,6 @@
 #!/usr/bin/env uv run
 # /// script
-# requires-python = ">=3.12"
+# requires-python = ">=3.13"
 # dependencies = [
 #     "packaging",
 # ]
