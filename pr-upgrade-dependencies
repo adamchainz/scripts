@@ -40,5 +40,5 @@ git commit -m 'Upgrade dependencies' -a
 
 git push
 gh pr create --fill
-gh pr view --web
+# Workaround to avoid hitting GitHub rate limit of ~10 PRs per minute
 sleep 20
