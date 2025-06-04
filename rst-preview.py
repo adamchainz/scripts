@@ -14,6 +14,7 @@ with live reloading on file changes.
 # ]
 # ///
 
+import subprocess
 import sys
 import threading
 import webbrowser
@@ -92,6 +93,8 @@ def index(request):
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
             {github_markdown_css}
+
+            {pygments_github_dark_css}
 
             .markdown-body {{
                 box-sizing: border-box;
@@ -1400,6 +1403,13 @@ github_markdown_css = """\
   min-height: 52px;
 }
 """
+
+pygments_github_dark_css = subprocess.run(
+    [sys.executable, "-m", "pygments", "-S", "github-dark", "-f", "html", "-a", ".code"],
+    text=True,
+    capture_output=True,
+    check=True,
+).stdout
 
 
 if __name__ == "__main__":
