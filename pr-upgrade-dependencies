@@ -40,5 +40,7 @@ git commit -m 'Upgrade dependencies' -a
 
 git push
 gh pr create --fill
+sleep 1
+gh pr merge --squash --delete-branch --auto --merge upgrade_dependencies
 # Workaround to avoid hitting GitHub rate limit of ~10 PRs per minute
-sleep 20
+sleep 19
