@@ -8,6 +8,7 @@
 # ///
 import os
 from typing import Any
+
 import httpx
 from rich.console import Console
 from rich.table import Table

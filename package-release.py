@@ -77,7 +77,6 @@ def main(argv=None) -> int:
         return 1
 
     if Path("pyproject.toml").exists():
-
         with Path("pyproject.toml").open("rb") as fp:
             current_version = Version(tomllib.load(fp)["project"]["version"])
 
@@ -160,8 +159,7 @@ def main(argv=None) -> int:
         if (
             # Ignored apps: Travis CI and AppVeyor show up in pytest org where
             # other repos use them, but I don't.
-            s["app"] is not None
-            and s["app"]["name"] not in ("Travis CI", "AppVeyor")
+            s["app"] is not None and s["app"]["name"] not in ("Travis CI", "AppVeyor")
         )
         and not (
             # Dependabot allowed to fail, sometimes it’s broken, and all it

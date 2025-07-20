@@ -20,15 +20,15 @@ import threading
 import webbrowser
 from pathlib import Path
 
-import watchfiles
 import django
-from docutils.core import publish_parts
-from docutils.parsers.rst import Parser
+import watchfiles
 from django.conf import settings
 from django.core.management import call_command
 from django.http import HttpResponse
 from django.urls import include, path
 from django_browser_reload.views import trigger_reload_soon
+from docutils.core import publish_parts
+from docutils.parsers.rst import Parser
 
 settings.configure(
     DEBUG=True,
@@ -1405,7 +1405,17 @@ github_markdown_css = """\
 """
 
 pygments_github_dark_css = subprocess.run(
-    [sys.executable, "-m", "pygments", "-S", "github-dark", "-f", "html", "-a", ".code"],
+    [
+        sys.executable,
+        "-m",
+        "pygments",
+        "-S",
+        "github-dark",
+        "-f",
+        "html",
+        "-a",
+        ".code",
+    ],
     text=True,
     capture_output=True,
     check=True,
