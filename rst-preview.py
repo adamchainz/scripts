@@ -1,4 +1,4 @@
-#!/usr/bin/env uv run
+#!/usr/bin/env uv run --script
 """
 Preview a reStructuredText (RST) file in a web browser with GitHub-like styles,
 with live reloading on file changes.
