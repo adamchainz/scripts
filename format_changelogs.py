@@ -83,7 +83,12 @@ def get_changelog_link(pkg: str) -> str | None:
 
 
 links = {
+    "azure-core": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/core/azure-core/CHANGELOG.md",
     "billiard": "https://pypi.python.org/pypi/billiard",
+    "botbuilder-core": "https://github.com/microsoft/botbuilder-python/releases",
+    "botbuilder-schema": "https://github.com/microsoft/botbuilder-python/releases",
+    "botframework-connector": "https://github.com/microsoft/botbuilder-python/releases",
+    "botframework-streaming": "https://github.com/microsoft/botbuilder-python/releases",
     "boto": "http://docs.pythonboto.org/en/latest/#release-notes",
     "boto3": "https://github.com/boto/boto3/blob/develop/CHANGELOG.rst",
     "botocore": "https://github.com/boto/botocore/blob/develop/CHANGELOG.rst",
