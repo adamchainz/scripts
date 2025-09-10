@@ -11,12 +11,12 @@ import json
 import os
 import subprocess
 import sys
-import tomllib
 from functools import partial
 from glob import glob
 from pathlib import Path
 from textwrap import dedent
 
+import tomllib
 from packaging.version import Version
 
 run = partial(subprocess.run, check=True)
@@ -78,11 +78,15 @@ def main(argv=None) -> int:
 
     if Path("pyproject.toml").exists():
         with Path("pyproject.toml").open("rb") as fp:
-            current_version = Version(tomllib.load(fp)["project"]["version"])
+            pyproject_data = tomllib.load(fp)
+            current_version = Version(pyproject_data["project"]["version"])
+            name = pyproject_data["project"]["name"]
 
     elif Path("Cargo.toml").exists():
         with Path("Cargo.toml").open("rb") as fp:
-            current_version = Version(tomllib.load(fp)["package"]["version"])
+            cargo_data = tomllib.load(fp)
+            current_version = Version(cargo_data["package"]["version"])
+            name = cargo_data["package"]["name"]
 
     else:
         print("❌ No pyproject.toml or Cargo.toml found", file=sys.stderr)
@@ -156,10 +160,17 @@ def main(argv=None) -> int:
     check_suites = [
         s
         for s in check_suites
-        if (
-            # Ignored apps: Travis CI and AppVeyor show up in pytest org where
-            # other repos use them, but I don't.
-            s["app"] is not None and s["app"]["name"] not in ("Travis CI", "AppVeyor")
+        if not (
+            # Ignored apps from pytest-dev org, which appear due to the organization
+            # configuration, but I don't use them.
+            name == "pytest-randomly"
+            and s["app"] is not None
+            and s["app"]["name"]
+            in (
+                "AppVeyor",
+                "Read the Docs Community",
+                "Travis CI",
+            )
         )
         and not (
             # Dependabot allowed to fail, sometimes it’s broken, and all it
@@ -173,9 +184,20 @@ def main(argv=None) -> int:
     if not all(s["conclusion"] == "SUCCESS" for s in check_suites):
         print("❌ Not all checks are successful:", file=sys.stderr)
         for check_suite in check_suites:
-            for check_run in check_suite["checkRuns"]["nodes"]:
+            print(
+                f"    {check_suite['app']['name']} - {check_suite['status']} / {check_suite['conclusion']}",
+                file=sys.stderr,
+            )
+            nodes = check_suite["checkRuns"]["nodes"]
+            if nodes:
+                for check_run in nodes:
+                    print(
+                        f"        {check_run['name']}: {check_run['conclusion']}",
+                        file=sys.stderr,
+                    )
+            else:
                 print(
-                    f"    {check_run['name']}: {check_run['conclusion']}",
+                    "        (No specific runs.)",
                     file=sys.stderr,
                 )
         return 1
