@@ -26,8 +26,8 @@ def call_ohdear_api(endpoint: str) -> list[dict[str, Any]]:
     return response.json()["data"]
 
 
-def fetch_sites() -> list[dict[str, Any]]:
-    return call_ohdear_api("sites")
+def fetch_monitors() -> list[dict[str, Any]]:
+    return call_ohdear_api("monitors")
 
 
 def fetch_broken_links(site_id: int) -> list[dict[str, Any]]:
@@ -36,13 +36,15 @@ def fetch_broken_links(site_id: int) -> list[dict[str, Any]]:
 
 def main() -> int:
     console = Console()
-    sites = fetch_sites()
-    for site in sites:
-        site_name = site["url"]
-        site_id = site["id"]
+    monitors = fetch_monitors()
+    for monitor in monitors:
+        if monitor["type"] != "http":
+            continue
+        url = monitor["url"]
+        site_id = monitor["id"]
         broken_links = fetch_broken_links(site_id)
 
-        table = Table(title=site_name)
+        table = Table(title=url)
         table.add_column("Found On", style="cyan")
         table.add_column("Broken Link", style="magenta")
         table.add_column("Status Code", style="red")
