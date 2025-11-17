@@ -54,6 +54,6 @@ gh-branch-protection-checks.py remove main 'Python 3.9'
 pre-commit run -a || :
 
 echo "Check below search results for more to change..."
-rg -C2 --pretty --iglob '!CHANGELOG.rst' --iglob '!uv.lock' --iglob '!*.svg' --glob '!*.js' --glob '!*.css' '3\b.*\b(9|10)\b'
+rg -C2 --pretty --iglob '!CHANGELOG.rst' --iglob '!uv.lock' --iglob '!*.svg' --glob '!*.js' --glob '!*.css' '3(9|\b.*\b(9|10))\b'
 
 git status -sb
