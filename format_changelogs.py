@@ -89,7 +89,11 @@ def get_changelog_link(pkg: str) -> str | None:
 
 
 links = {
+    "aiohttp": "https://docs.aiohttp.org/en/stable/changes.html",
+    "aiosignal": "https://github.com/aio-libs/aiosignal/blob/master/CHANGES.rst",
+    "arrow": "https://arrow.readthedocs.io/en/latest/releases.html",
     "azure-core": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/core/azure-core/CHANGELOG.md",
+    "babel": "https://babel.pocoo.org/en/latest/changelog.html",
     "beautifulsoup4": "https://git.launchpad.net/beautifulsoup/tree/CHANGELOG",
     "billiard": "https://pypi.python.org/pypi/billiard",
     "botbuilder-core": "https://github.com/microsoft/botbuilder-python/releases",
@@ -99,8 +103,11 @@ links = {
     "boto": "http://docs.pythonboto.org/en/latest/#release-notes",
     "boto3": "https://github.com/boto/boto3/blob/develop/CHANGELOG.rst",
     "botocore": "https://github.com/boto/botocore/blob/develop/CHANGELOG.rst",
+    "branca": "https://github.com/python-visualization/branca/releases",
     "brotli": "https://github.com/google/brotli/releases",
+    "cachetools": "https://github.com/tkem/cachetools/blob/master/CHANGELOG.rst",
     "celery": "http://docs.celeryproject.org/en/latest/changelog.html",
+    "certifi": "https://github.com/certifi/python-certifi/commits/master/",
     "coverage": "https://coverage.readthedocs.io/en/latest/changes.html",
     "dj-database-url": "https://github.com/jazzband/dj-database-url/blob/master/CHANGELOG.md",
     "django-filter": "https://github.com/carltongibson/django-filter/blob/master/CHANGES.rst",
@@ -122,7 +129,11 @@ links = {
     "flake8": "https://flake8.readthedocs.io/en/latest/release-notes/3.2.1.html",
     "flake8-coding": "https://github.com/tk0miya/flake8-coding/blob/master/CHANGES.rst",
     "flake8-tidy-imports": "https://pypi.python.org/pypi/flake8-tidy-imports",
+    "folium": "https://github.com/python-visualization/folium/releases",
     "fonttools": "https://github.com/fonttools/fonttools/blob/main/NEWS.rst",
+    "frozenlist": "https://frozenlist.aio-libs.org/en/latest/changes/",
+    "h11": "https://h11.readthedocs.io/en/latest/changes.html",
+    "httpcore": "https://github.com/encode/httpcore/blob/master/CHANGELOG.md",
     "iniconfig": "https://github.com/pytest-dev/iniconfig/blob/main/CHANGELOG",
     "jinja2": "https://jinja.palletsprojects.com/en/stable/changes/",
     "kombu": "https://kombu.readthedocs.io/en/latest/changelog.html",
@@ -132,6 +143,8 @@ links = {
     "matplotlib": "https://matplotlib.org/stable/users/release_notes",
     "mdit-py-plugins": "https://github.com/executablebooks/mdit-py-plugins/blob/master/CHANGELOG.md",
     "memray": "https://bloomberg.github.io/memray/changelog.html",
+    "more-itertools": "https://more-itertools.readthedocs.io/en/stable/versions.html",
+    "multidict": "https://multidict.aio-libs.org/en/stable/changes/",
     "mycli": "https://github.com/dbcli/mycli/blob/master/changelog.md",
     "pillow": "https://github.com/python-pillow/Pillow/blob/master/CHANGES.rst",
     "pipdeptree": "https://github.com/naiquevin/pipdeptree/blob/master/CHANGES.md",
@@ -148,6 +161,7 @@ links = {
     "raven": "https://github.com/getsentry/raven-python/blob/master/CHANGES",
     "redis": "https://github.com/redis/redis-py/releases",
     "regex": "https://bitbucket.org/mrabarnett/mrab-regex/commits/branch/default",
+    "requests": "https://requests.readthedocs.io/en/latest/community/updates/#release-history",
     "rich": "https://github.com/Textualize/rich/blob/master/CHANGELOG.md",
     "s3transfer": "https://github.com/boto/s3transfer/blob/develop/CHANGELOG.rst",
     "schema": "https://github.com/keleshev/schema/commits/master",
@@ -164,6 +178,8 @@ links = {
     "vcrpy": "https://vcrpy.readthedocs.io/en/latest/changelog.html",
     "waitress": "https://github.com/Pylons/waitress/blob/master/CHANGES.txt",
     "webob": "https://webob.readthedocs.io/en/stable/changes.html",
+    "websocket-client": "https://github.com/websocket-client/websocket-client/blob/master/ChangeLog",
+    "yarl": "https://yarl.aio-libs.org/en/latest/changes/",
 }
 
 
