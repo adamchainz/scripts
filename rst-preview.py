@@ -4,7 +4,7 @@ Preview a reStructuredText (RST) file in a web browser with GitHub-like styles,
 with live reloading on file changes.
 """
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.14"
 # dependencies = [
 #   "django>=5.2rc1",
 #   "django-browser-reload>=1.18.0",
