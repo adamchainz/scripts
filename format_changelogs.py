@@ -70,9 +70,8 @@ def get_changelog_link(pkg: str) -> str | None:
             print("{pkg} not found on PyPI".format(pkg=pkg), file=sys.stderr)
             return None
         data = response.json()
-        project_urls = {
-            key.lower(): value for key, value in data["info"]["project_urls"].items()
-        }
+        project_urls = data["info"]["project_urls"] or {}
+        project_urls = {key.lower(): value for key, value in project_urls.items()}
         if "changelog" in project_urls:
             link = project_urls["changelog"]
         elif "changes" in project_urls:
@@ -90,6 +89,7 @@ def get_changelog_link(pkg: str) -> str | None:
 
 links = {
     "aiohttp": "https://docs.aiohttp.org/en/stable/changes.html",
+    "aiohttp-retry": "https://github.com/inyutin/aiohttp_retry/releases",
     "aiosignal": "https://github.com/aio-libs/aiosignal/blob/master/CHANGES.rst",
     "arrow": "https://arrow.readthedocs.io/en/latest/releases.html",
     "azure-core": "https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/core/azure-core/CHANGELOG.md",
@@ -146,9 +146,13 @@ links = {
     "more-itertools": "https://more-itertools.readthedocs.io/en/stable/versions.html",
     "multidict": "https://multidict.aio-libs.org/en/stable/changes/",
     "mycli": "https://github.com/dbcli/mycli/blob/master/changelog.md",
+    "numpy": "https://numpy.org/devdocs/release.html",
+    "pandas": "https://pandas.pydata.org/docs/whatsnew/index.html",
     "pillow": "https://github.com/python-pillow/Pillow/blob/master/CHANGES.rst",
     "pipdeptree": "https://github.com/naiquevin/pipdeptree/blob/master/CHANGES.md",
     "prompt-toolkit": "https://github.com/jonathanslenders/python-prompt-toolkit/blob/master/CHANGELOG",
+    "propcache": "https://propcache.aio-libs.org/en/latest/changes/",
+    "pyarrow": "https://arrow.apache.org/release/",
     "pycodestyle": "https://pypi.python.org/pypi/pycodestyle",
     "pyflakes": "https://github.com/PyCQA/pyflakes/blob/master/NEWS.txt",
     "pyparsing": "https://github.com/pyparsing/pyparsing/blob/master/CHANGES",
