@@ -157,6 +157,12 @@ def main(argv=None) -> int:
         ).stdout
     )
     check_suites = checks_data["data"]["repository"]["object"]["checkSuites"]["nodes"]
+    if not check_suites:
+        print(
+            "❌ No check suites found for the latest commit - tests may not have started yet.",
+            file=sys.stderr,
+        )
+        return 1
     check_suites = [
         s
         for s in check_suites
