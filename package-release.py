@@ -276,8 +276,8 @@ def main(argv=None) -> int:
             build_command.append("--sdist")
         run(build_command, env={**os.environ, "PIP_REQUIRE_VIRTUALENV": "0"})
 
-        run(["twine", "check", *glob("dist/*")])
-        run(["twine", "upload", *glob("dist/*")])
+        run(["uvx", "twine", "check", *glob("dist/*")])
+        run(["uvx", "twine", "upload", *glob("dist/*")])
 
     run(["git", "push", "origin", default_branch])
     run(["git", "tag", "--annotate", version, "--message", f"Version {version}"])
