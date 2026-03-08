@@ -231,8 +231,8 @@ def main(argv=None) -> int:
         assert changelog_lines[1] == "Changelog"
         assert changelog_lines[2] == "========="
         assert changelog_lines[3] == ""
-        if changelog_lines[4] == "Unreleased":
-            assert changelog_lines[5] == "----------"
+        if changelog_lines[4] in ("Unreleased", "Pending"):
+            assert changelog_lines[5] == "-" * len(changelog_lines[4])
             assert changelog_lines[6] == ""
             del changelog_lines[4:7]
 
