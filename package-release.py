@@ -174,6 +174,7 @@ def main(argv=None) -> int:
             and s["app"]["name"]
             in (
                 "AppVeyor",
+                "Claude",
                 "Read the Docs Community",
                 "Travis CI",
             )
