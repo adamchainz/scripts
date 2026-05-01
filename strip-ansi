@@ -1,0 +1,36 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# ///
+
+import argparse
+import re
+import sys
+
+ANSI_ESCAPE = re.compile(
+    r"""
+    \x1b
+    (?:
+        \[ [0-?]* [ -/]* [@-~]              # CSI sequences
+        | \] [^\x07\x1b]* (?:\x07|\x1b\\)  # OSC sequences (hyperlinks, etc.)
+        | [@-Z\\-_]                         # 2-char Fe sequences
+    )
+    """,
+    re.VERBOSE,
+)
+
+
+def strip_ansi(text: str) -> str:
+    return ANSI_ESCAPE.sub("", text)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Strip ANSI escape codes from text.")
+    parser.add_argument("file", nargs="?", type=argparse.FileType("r"), default=sys.stdin)
+    args = parser.parse_args()
+
+    sys.stdout.write(strip_ansi(args.file.read()))
+
+
+if __name__ == "__main__":
+    main()
