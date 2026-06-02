@@ -133,14 +133,22 @@ def main(argv=None) -> int:
         commit_sha = get_current_commit()
         rprint(f"[dim]Current commit: {commit_sha}[/dim]", file=sys.stderr)
 
-        # Get workflow run for this commit
-        run = get_workflow_run(args.workflow, commit_sha)
-        if not run:
-            rprint(
-                f"[dim]No workflow run found for commit {commit_sha} and workflow {args.workflow}[/dim]",
-                file=sys.stderr,
-            )
-            return 1
+        # Get workflow run for this commit (poll until found)
+        run = None
+        poll_start = time.time()
+        while run is None:
+            run = get_workflow_run(args.workflow, commit_sha)
+            if run is None:
+                if time.time() - poll_start > 10.0:
+                    rprint(
+                        f"[dim]No workflow run found for commit {commit_sha} and workflow {args.workflow}[/dim]",
+                        file=sys.stderr,
+                    )
+                    return 1
+                rprint(
+                    "[dim]Waiting for workflow run to appear...[/dim]", file=sys.stderr
+                )
+                time.sleep(1)
 
         run_id = run["databaseId"]
         rprint(f"[dim]Found workflow run: {run_id}[/dim]", file=sys.stderr)
