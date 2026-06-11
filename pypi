@@ -1,24 +1,29 @@
-#!/usr/bin/env python
+#!/usr/bin/env uv run --script --no-project
 import subprocess
 import sys
 import tomllib
 import webbrowser
 
-# run git rev-parse --path-format=relative --show-toplevel
-proc = subprocess.run(
-    ["git", "rev-parse", "--path-format=relative", "--show-toplevel"],
-    capture_output=True,
-    text=True,
-)
-if proc.returncode != 0:
-    print(proc.stdout)
-    print(proc.stderr, file=sys.stderr)
-    sys.exit(proc.returncode)
 
-root = proc.stdout.strip()
+def main():
+    proc = subprocess.run(
+        ["git", "rev-parse", "--path-format=relative", "--show-toplevel"],
+        capture_output=True,
+        text=True,
+    )
+    if proc.returncode != 0:
+        print(proc.stdout)
+        print(proc.stderr, file=sys.stderr)
+        sys.exit(proc.returncode)
 
-with open(f"{root}/pyproject.toml", "rb") as f:
-    data = tomllib.load(f)
+    root = proc.stdout.strip()
 
-name = data["project"]["name"]
-webbrowser.open(f"https://pypi.org/project/{name}")
+    with open(f"{root}/pyproject.toml", "rb") as f:
+        data = tomllib.load(f)
+
+    name = data["project"]["name"]
+    webbrowser.open(f"https://pypi.org/project/{name}")
+
+
+if __name__ == "__main__":
+    main()
