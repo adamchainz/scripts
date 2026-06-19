@@ -40,7 +40,19 @@ def get_current_commit() -> str:
     return result.stdout.strip()
 
 
-def get_workflow_run(workflow_path: str, commit_sha: str) -> dict | None:
+def get_current_branch() -> str:
+    """Get the current branch name."""
+    result = subprocess.run(
+        ["git", "branch", "--show-current"],
+        text=True,
+        stdout=subprocess.PIPE,
+    )
+    if result.returncode != 0:
+        raise SystemExit(result.returncode)
+    return result.stdout.strip()
+
+
+def get_workflow_run(workflow_path: str, commit_sha: str, branch: str) -> dict | None:
     """Get the workflow run for the given commit."""
     runs_json = run_gh_command(
         [
@@ -48,6 +60,8 @@ def get_workflow_run(workflow_path: str, commit_sha: str) -> dict | None:
             "list",
             "--commit",
             commit_sha,
+            "--branch",
+            branch,
             "--workflow",
             workflow_path,
             "--json",
@@ -133,11 +147,14 @@ def main(argv=None) -> int:
         commit_sha = get_current_commit()
         rprint(f"[dim]Current commit: {commit_sha}[/dim]", file=sys.stderr)
 
+        branch = get_current_branch()
+        rprint(f"[dim]Current branch: {branch}[/dim]", file=sys.stderr)
+
         # Get workflow run for this commit (poll until found)
         run = None
         poll_start = time.time()
         while run is None:
-            run = get_workflow_run(args.workflow, commit_sha)
+            run = get_workflow_run(args.workflow, commit_sha, branch)
             if run is None:
                 if time.time() - poll_start > 10.0:
                     rprint(
