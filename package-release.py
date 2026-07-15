@@ -187,6 +187,10 @@ def main(argv=None) -> int:
             and len(s["checkRuns"]["nodes"]) == 1
             and s["checkRuns"]["nodes"][0]["name"] == "Dependabot"
         )
+        and not (
+            # Claude just does review
+            s["app"] is not None and s["app"]["name"] == "Claude"
+        )
     ]
     if not all(s["conclusion"] == "SUCCESS" for s in check_suites):
         print("❌ Not all checks are successful:", file=sys.stderr)
