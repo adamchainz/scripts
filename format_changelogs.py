@@ -54,7 +54,7 @@ def main():
         raise SystemExit(1)
     else:
         print("Changelogs:")
-        print("")
+        print()
         for line in out:
             print(line)
 
@@ -63,11 +63,9 @@ def get_changelog_link(pkg: str) -> str | None:
     link = links.get(pkg.lower())
     if link is None:
         # Use urllib3 to request JSON from PyPI and find the changelog link there
-        response = urllib3.request(
-            "GET", "https://pypi.python.org/pypi/{pkg}/json".format(pkg=pkg)
-        )
+        response = urllib3.request("GET", f"https://pypi.python.org/pypi/{pkg}/json")
         if response.status != 200:
-            print("{pkg} not found on PyPI".format(pkg=pkg), file=sys.stderr)
+            print(f"{pkg} not found on PyPI", file=sys.stderr)
             return None
         data = response.json()
         project_urls = data["info"]["project_urls"] or {}
