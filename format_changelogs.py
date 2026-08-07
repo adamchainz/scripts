@@ -186,6 +186,7 @@ links = {
     "packaging": "https://github.com/pypa/packaging/blob/main/CHANGELOG.rst",
     "pandas": "https://pandas.pydata.org/docs/whatsnew/index.html",
     "parso": "https://github.com/davidhalter/parso/blob/master/CHANGELOG.rst",
+    "pelican": "https://docs.getpelican.com/en/latest/changelog.html",
     "phonenumbers": "https://github.com/daviddrysdale/python-phonenumbers/blob/dev/python/HISTORY.md",
     "pillow": "https://pillow.readthedocs.io/en/stable/releasenotes/index.html",
     "pipdeptree": "https://github.com/naiquevin/pipdeptree/blob/master/CHANGES.md",
