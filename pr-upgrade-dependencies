@@ -19,8 +19,18 @@ if [[ -f uv.lock ]]; then
   uv lock --upgrade
 fi
 
+# Upgrade pinned Rust version
+if [[ -f rust-toolchain.toml ]]; then
+  latest_rust_version=$(curl -sSf https://raw.githubusercontent.com/rust-lang/rust/stable/src/version)
+  sd '^channel = "[0-9.]+"' "channel = \"${latest_rust_version%.*}\"" rust-toolchain.toml
+  # Match MSRV to the toolchain, only for packages not published to crates.io
+  if rg -q '^publish = false' Cargo.toml 2>/dev/null; then
+    sd '^rust-version = "[0-9.]+"' "rust-version = \"${latest_rust_version%.*}\"" Cargo.toml
+  fi
+fi
+
 # Upgrade Rust dependencies
-if [[ -f cargo.lock ]]; then
+if [[ -f Cargo.lock ]]; then
   cargo update
 fi
 
