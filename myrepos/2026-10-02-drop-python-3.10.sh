@@ -34,7 +34,7 @@ uv lock
 if [ -f tox.ini ]; then
     sd --across ' +py310\b.*\n' '' tox.ini
     # shellcheck disable=SC2016
-    sd '(py\{.*), 310\}' '${1}}' tox.ini
+    sd '(py\{[^}]*), 310\b' '$1' tox.ini
 fi
 
 # Update documented supported versions
@@ -66,6 +66,17 @@ Changelog
 -+)' "\$1
 
 $entry" "$changelog"
+
+# Projects with unreleased entries directly under the title
+if git diff --exit-code "$changelog" >/dev/null; then
+    sd --across -f m '(=========
+Changelog
+=========
+
+)\*' "\${1}$entry
+
+*" "$changelog"
+fi
 
 if git diff --exit-code "$changelog" >/dev/null; then
     sd --across -f m '(=========
@@ -102,6 +113,6 @@ rg -C2 --pretty \
   --iglob '!*.svg' \
   --iglob '!*.css' \
   --iglob '!*.js' \
-  '3\b.*\b(10|11)\b' || :
+  '3\b.*\b(10|11)\b|0x030[aAbB]' || :
 
 git status -sb
