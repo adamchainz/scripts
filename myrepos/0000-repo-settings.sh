@@ -14,3 +14,9 @@ gh api 'repos/{owner}/{repo}' \
     --field has_wiki=false \
     --field squash_merge_commit_message=PR_BODY \
     --field squash_merge_commit_title=PR_TITLE
+
+gh api 'repos/{owner}/{repo}/subscription' \
+    --method PUT \
+    --silent \
+    --field subscribed=true \
+    --field ignored=false
