@@ -76,33 +76,33 @@ sd 'Python (.*?) to 3.14 supported.' 'Python $1 to 3.15 supported.' $installatio
 
 # # Add changelog entry
 
-# if [ -f docs/changelog.rst ]; then
-#     changelog=docs/changelog.rst
-# else
-#     changelog=CHANGELOG.rst
-# fi
+if [ -f docs/changelog.rst ]; then
+    changelog=docs/changelog.rst
+else
+    changelog=CHANGELOG.rst
+fi
 
-# entry="* Support Python 3.15."
+entry="* Support Python 3.15."
 
-# sd --across -f m '(=========
-# Changelog
-# =========
+sd --across -f m '(=========
+Changelog
+=========
 
-# Unreleased
-# ----------)' "\$1
+Unreleased
+----------)' "\$1
 
-# $entry" "$changelog"
+$entry" "$changelog"
 
-# if git diff --exit-code "$changelog" >/dev/null; then
-#     sd --across -f m '(=========
-# Changelog
-# =========)' "\$1
+if git diff --exit-code "$changelog" >/dev/null; then
+    sd --across -f m '(=========
+Changelog
+=========)' "\$1
 
-# Unreleased
-# ----------
+Unreleased
+----------
 
-# $entry" "$changelog"
-# fi
+$entry" "$changelog"
+fi
 
 # Commit
 
