@@ -21,7 +21,18 @@ fi
 
 # Upgrade pinned Rust version
 if [[ -f rust-toolchain.toml ]]; then
-  latest_rust_version=$(curl -sSf https://raw.githubusercontent.com/rust-lang/rust/stable/src/version)
+  cache_file=${XDG_CACHE_HOME:-$HOME/.cache}/pr-upgrade-dependencies/rust-stable-version
+  mkdir -p ${cache_file:h}
+  touch $cache_file.lock
+  (
+    zmodload zsh/system
+    zsystem flock $cache_file.lock
+    if [[ -z $(find $cache_file -mmin -60 2>/dev/null) ]]; then
+      curl -sSf https://raw.githubusercontent.com/rust-lang/rust/stable/src/version -o $cache_file.tmp
+      mv $cache_file.tmp $cache_file
+    fi
+  )
+  latest_rust_version=$(<$cache_file)
   sd '^channel = "[0-9.]+"' "channel = \"${latest_rust_version%.*}\"" rust-toolchain.toml
   # Match MSRV to the toolchain, only for packages not published to crates.io
   if rg -q '^publish = false' Cargo.toml 2>/dev/null; then
