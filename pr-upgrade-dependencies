@@ -1,6 +1,8 @@
 #!/bin/zsh
 set -ex
 
+zparseopts -D -E -F -- -no-sleep=no_sleep
+
 if ! git diff --exit-code --no-patch; then
   echo "Uncommitted changes."
   exit 1
@@ -64,4 +66,6 @@ gh pr create --fill
 sleep 1
 gh pr merge --squash --delete-branch --auto upgrade_dependencies
 # Workaround to avoid hitting GitHub rate limit of ~10 PRs per minute
-sleep 19
+if (( ! $#no_sleep )); then
+  sleep 19
+fi
