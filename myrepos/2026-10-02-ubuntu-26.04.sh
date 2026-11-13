@@ -5,22 +5,30 @@ git diff --exit-code
 git switch main
 git pull
 
-files=(.github/workflows/*.yml(N))
-if [ -f .readthedocs.yaml ]; then
-    files+=(.readthedocs.yaml)
+old_ubuntu='ubuntu-2[024]\.04'
+
+# (N) = empty list if no match, (.) = regular files only
+files=(.github/workflows/*.(yml|yaml)(N.) .readthedocs.(yml|yaml)(N.))
+if (( ! $#files )); then
+    echo "No GitHub Actions or Read the Docs config found."
+    exit 0
 fi
 
-if ! rg -q 'ubuntu-2[24]\.04' "${files[@]}"; then
+# rg exits 1 for no matches, which is fine, but 2 for errors, which should stop us
+# (f) splits the output into an array on newlines
+matching=(${(f)"$(rg -l $old_ubuntu $files || (( $? == 1 )))"})
+if (( ! $#matching )); then
     echo "No old Ubuntu versions found, nothing to migrate."
     exit 0
 fi
 
+git switch -c ubuntu_26.04
+
 # GitHub Actions: runs-on, including ubuntu-24.04-arm and expressions
 # Read the Docs: build.os
-sd 'ubuntu-2[24]\.04' 'ubuntu-26.04' "${files[@]}"
+sd $old_ubuntu ubuntu-26.04 $matching
 
-git switch -c ubuntu_26.04
-git add --update "${files[@]}"
+git add $matching
 git commit -m "Upgrade to Ubuntu 26.04"
 
 git push
