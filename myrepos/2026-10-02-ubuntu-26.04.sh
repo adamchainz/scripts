@@ -1,5 +1,5 @@
 #!/bin/zsh
-set -eu
+setopt err_exit no_unset pipe_fail
 
 git diff --exit-code
 git switch main
